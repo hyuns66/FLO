@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
-    android:overScrollMode="never">
+    android:overScrollMode="never"
+    android:paddingBottom="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -361,7 +362,7 @@
         </HorizontalScrollView>
 
         <ImageView
-            android:id="@+id/home_add_1_iv"
+            android:id="@+id/home_ad_1_iv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -387,7 +388,7 @@
             android:id="@+id/home_everyday_good_pannel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/home_add_1_iv"
+            app:layout_constraintTop_toBottomOf="@id/home_ad_1_iv"
             app:layout_constraintStart_toStartOf="parent"
             android:scrollbars="none"
             android:layout_marginTop="50dp"
@@ -650,14 +651,106 @@
         </HorizontalScrollView>
 
         <ImageView
-            android:layout_width="wrap_content"
+            android:id="@+id/home_ad_2_iv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:src="@drawable/discovery_banner_aos"
             app:layout_constraintTop_toBottomOf="@id/home_video_collection_panel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"/>
+
+        <ImageView
+            android:id="@+id/home_ad_3_iv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/img_home_viewpager_exp2"
+            app:layout_constraintTop_toBottomOf="@id/home_ad_2_iv"
+            app:layout_constraintStart_toStartOf="@id/home_ad_2_iv"
+            app:layout_constraintEnd_toEndOf="@id/home_ad_2_iv"
             android:layout_margin="15dp"/>
+
+        <LinearLayout
+            android:id="@+id/home_bottom_icons_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/home_ad_3_iv"
+            android:layout_marginTop="30dp">
+
+            <ImageView
+                android:id="@+id/home_btn_facebook_iv"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_main_facebook_btn"
+                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/home_btn_instagram_iv"
+                android:layout_margin="15dp"/>
+
+            <ImageView
+                android:id="@+id/home_btn_instagram_iv"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_main_instagram_btn"
+                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
+                app:layout_constraintStart_toEndOf="@id/home_btn_facebook_iv"
+                app:layout_constraintEnd_toStartOf="@id/home_btn_youtube_iv"
+                android:layout_margin="15dp"/>
+
+            <ImageView
+                android:id="@+id/home_btn_youtube_iv"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_main_youtube_btn"
+                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
+                app:layout_constraintStart_toEndOf="@id/home_btn_instagram_iv"
+                app:layout_constraintEnd_toStartOf="@id/home_btn_twitter_iv"
+                android:layout_margin="15dp"/>
+
+            <ImageView
+                android:id="@+id/home_btn_twitter_iv"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_main_twitter_btn"
+                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
+                app:layout_constraintStart_toEndOf="@id/home_btn_youtube_iv"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="15dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/home_company_info_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(주)드림어스컴퍼니 사업자 정보 >"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@+id/home_bottom_icons_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:id="@+id/home_company_info_2_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ⓒ DREAMUS CO., LTD."
+            android:textSize="11sp"
+            app:layout_constraintTop_toBottomOf="@id/home_company_info_tv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="5dp"/>
+
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
