@@ -165,7 +165,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/btn_arrow_more"
+            android:src="@drawable/ic_right_arrow_black"
             app:layout_constraintStart_toEndOf="@id/look_chart_tv"
             app:layout_constraintBottom_toBottomOf="@id/look_chart_tv"/>
 
@@ -1420,7 +1420,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/btn_arrow_more"
+            android:src="@drawable/ic_right_arrow_black"
             app:layout_constraintStart_toEndOf="@id/look_movie_tv"
             app:layout_constraintBottom_toBottomOf="@id/look_movie_tv"/>
 
@@ -1486,7 +1486,7 @@
                             android:layout_height="140dp"
                             android:scaleType="centerInside"
                             android:background="@color/black"
-                            android:src="@drawable/img_video_exp"
+                            android:src="@drawable/img_potcast_exp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -1669,7 +1669,7 @@
             <ImageView
                 android:src="@drawable/img_jenre_exp_1"
                 android:adjustViewBounds="true"
-                android:layout_width="50dp"
+                android:layout_width="0dp"
                 android:layout_columnWeight="1"
                 android:layout_margin="5dp"/>
 
@@ -1751,8 +1751,6 @@
                 android:layout_margin="5dp"/>
 
         </GridLayout>
-
-
         
     </androidx.constraintlayout.widget.ConstraintLayout>
 

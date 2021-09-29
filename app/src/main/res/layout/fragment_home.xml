@@ -168,7 +168,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/btn_arrow_more"
+            android:src="@drawable/ic_right_arrow_black"
             app:layout_constraintStart_toEndOf="@id/home_today_published_pannel_title_tv"
             app:layout_constraintBottom_toBottomOf="@id/home_today_published_pannel_title_tv"/>
 
@@ -773,9 +773,6 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_main_facebook_btn"
-                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/home_btn_instagram_iv"
                 android:layout_margin="15dp"/>
 
             <ImageView
@@ -783,9 +780,6 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_main_instagram_btn"
-                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
-                app:layout_constraintStart_toEndOf="@id/home_btn_facebook_iv"
-                app:layout_constraintEnd_toStartOf="@id/home_btn_youtube_iv"
                 android:layout_margin="15dp"/>
 
             <ImageView
@@ -793,9 +787,6 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_main_youtube_btn"
-                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
-                app:layout_constraintStart_toEndOf="@id/home_btn_instagram_iv"
-                app:layout_constraintEnd_toStartOf="@id/home_btn_twitter_iv"
                 android:layout_margin="15dp"/>
 
             <ImageView
@@ -803,9 +794,6 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_main_twitter_btn"
-                app:layout_constraintTop_toBottomOf="@id/home_ad_3_iv"
-                app:layout_constraintStart_toEndOf="@id/home_btn_youtube_iv"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_margin="15dp"/>
 
         </LinearLayout>
