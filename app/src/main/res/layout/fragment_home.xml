@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
-    android:overScrollMode="never"
-    android:paddingBottom="20dp">
+    android:overScrollMode="never">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +14,7 @@
         <ImageView
             android:id="@+id/home_background_iv"
             android:layout_width="match_parent"
-            android:layout_height="470dp"
+            android:layout_height="430dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:src="@drawable/img_default_4_x_1"
@@ -31,7 +30,7 @@
             app:layout_constraintEnd_toEndOf="@id/home_background_iv"
             app:layout_constraintTop_toTopOf="@id/home_background_iv"
             android:layout_marginTop="30dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="5dp"/>
 
         <ImageView
             android:id="@+id/home_ticket_icon_iv"
@@ -40,7 +39,7 @@
             android:src="@drawable/btn_main_ticket"
             app:layout_constraintEnd_toStartOf="@id/home_setting_icon_iv"
             app:layout_constraintTop_toTopOf="@id/home_background_iv"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="5dp"
             android:layout_marginTop="30dp"/>
 
         <ImageView
@@ -50,7 +49,7 @@
             android:src="@drawable/btn_nugu"
             app:layout_constraintEnd_toStartOf="@id/home_ticket_icon_iv"
             app:layout_constraintTop_toTopOf="@+id/home_background_iv"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="5dp"
             android:layout_marginTop="30dp"/>
 
         <TextView
@@ -70,8 +69,8 @@
 
         <ImageView
             android:id="@+id/home_background_play_button_iv"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/btn_panel_play_large"
             app:layout_constraintEnd_toEndOf="@id/home_background_iv"
             app:layout_constraintBottom_toBottomOf="@id/home_background_title_tv"
@@ -157,7 +156,7 @@
             android:id="@+id/home_today_published_pannel_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="오늘 발매 음악 >"
+            android:text="오늘 발매 음악"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"
@@ -165,6 +164,13 @@
             android:layout_marginStart="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/home_today_published_pannel"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="27dp"
+            android:src="@drawable/btn_arrow_more"
+            app:layout_constraintStart_toEndOf="@id/home_today_published_pannel_title_tv"
+            app:layout_constraintBottom_toBottomOf="@id/home_today_published_pannel_title_tv"/>
 
         <TextView
             android:id="@+id/home_today_published_pannel_option1_tv"
@@ -808,13 +814,20 @@
             android:id="@+id/home_company_info_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="(주)드림어스컴퍼니 사업자 정보 >"
+            android:text="(주)드림어스컴퍼니 사업자 정보"
             android:textColor="@color/black"
             android:textSize="13sp"
             app:layout_constraintTop_toBottomOf="@+id/home_bottom_icons_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="5dp"/>
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:src="@drawable/btn_arrow_more"
+            app:layout_constraintStart_toEndOf="@id/home_company_info_tv"
+            app:layout_constraintBottom_toBottomOf="@id/home_company_info_tv"/>
 
         <TextView
             android:id="@+id/home_company_info_2_tv"
