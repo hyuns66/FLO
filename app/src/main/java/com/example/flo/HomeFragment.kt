@@ -19,6 +19,12 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        binding.homeBackgroundIv.setOnClickListener{
+            parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, AlbumInfoFragment())
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss()
+        }
 
         return binding.root
     }

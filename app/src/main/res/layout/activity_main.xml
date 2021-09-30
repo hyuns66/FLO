@@ -25,8 +25,8 @@
         android:paddingVertical="5dp"
         android:background="#F9F9F9"
         >
-        <LinearLayout
 
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -38,16 +38,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-
                 android:text="제목"
-
                 android:textColor="@color/black"
                 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-
                 android:text="가수"/>
 
         </LinearLayout>
@@ -57,7 +54,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-
             android:gravity="center_vertical">
 
             <ImageView
@@ -82,7 +78,6 @@
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-
                 android:src="@drawable/btn_miniplayer_next" />
 
 
