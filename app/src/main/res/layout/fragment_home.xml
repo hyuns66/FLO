@@ -168,7 +168,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/ic_right_arrow_black"
+            android:src="@drawable/btn_arrow_more"
             app:layout_constraintStart_toEndOf="@id/home_today_published_pannel_title_tv"
             app:layout_constraintBottom_toBottomOf="@id/home_today_published_pannel_title_tv"/>
 

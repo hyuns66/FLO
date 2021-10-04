@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import com.amar.library.ui.StickyScrollView
 import com.example.flo.databinding.FragmentLookBinding
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.amar.library.ui.StickyScrollView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,8 +7,7 @@
     android:layout_height="wrap_content"
     android:scrollbars="none"
     android:overScrollMode="never"
-    android:fitsSystemWindows="true"
-    app:stickyHeader="@id/look_custom_btns">
+    android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/look_main_layout"
@@ -165,7 +164,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/ic_right_arrow_black"
+            android:src="@drawable/btn_arrow_more"
             app:layout_constraintStart_toEndOf="@id/look_chart_tv"
             app:layout_constraintBottom_toBottomOf="@id/look_chart_tv"/>
 
@@ -1420,7 +1419,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="27dp"
-            android:src="@drawable/ic_right_arrow_black"
+            android:src="@drawable/btn_arrow_more"
             app:layout_constraintStart_toEndOf="@id/look_movie_tv"
             app:layout_constraintBottom_toBottomOf="@id/look_movie_tv"/>
 
@@ -1754,4 +1753,4 @@
         
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.amar.library.ui.StickyScrollView>
+</ScrollView>
