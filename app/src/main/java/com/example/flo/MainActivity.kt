@@ -15,6 +15,7 @@ import com.example.flo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    var isPlaying = false
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
 
@@ -24,18 +25,51 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNavigation()
 
+        if(intent.hasExtra("isPlaying")){
+            isPlaying = intent.getBooleanExtra("isPlaying", false)
+        }
+
+        // 플레이어 뷰 초기화
+        if(isPlaying == true){
+            binding.mainMiniplayerBtn.visibility = View.GONE
+            binding.mainPauseBtn.visibility = View.VISIBLE
+        } else {
+            binding.mainMiniplayerBtn.visibility = View.VISIBLE
+            binding.mainPauseBtn.visibility = View.GONE
+        }
+
+        val song = Song(binding.mainPlayerTitleTv.text.toString(), binding.mainPlayerArtistTv.text.toString(), null)
+
+        // SongActivity intent
         binding.mainPlayerLayout.setOnClickListener{
             val intent = Intent(this, SongActivity::class.java)
+            intent.putExtra("title", song.title)
+            intent.putExtra("artist", song.artist)
+            intent.putExtra("isPlaying", isPlaying)
             startActivity(intent)
         }
 
+        // 플레이, 정지 버튼
+        binding.mainMiniplayerBtn.setOnClickListener{
+            setPlayerStatus(isPlaying)
+            isPlaying = setPlayerStatus(isPlaying)
+            Log.d("isPlaying", isPlaying.toString())
+        }
+
+        binding.mainPauseBtn.setOnClickListener{
+            setPlayerStatus(isPlaying)
+            isPlaying = setPlayerStatus(isPlaying)
+            Log.d("isPlaying", isPlaying.toString())
+        }
+
+        // 바텀 네비게이션 뷰
         binding.mainBnv.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.homeFragment -> {
                     supportFragmentManager.popBackStack("homeFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, HomeFragment())
-                            .addToBackStack("homeFragment")
+                        .addToBackStack("homeFragment")
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
@@ -44,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.popBackStack("lookFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, LookFragment())
-                            .addToBackStack("lookFragment")
+                        .addToBackStack("lookFragment")
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
@@ -53,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.popBackStack("searchFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, SearchFragment())
-                            .addToBackStack("searchFragment")
+                        .addToBackStack("searchFragment")
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
@@ -62,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.popBackStack("lockerFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, LockerFragment())
-                            .addToBackStack("lockerFragment")
+                        .addToBackStack("lockerFragment")
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
@@ -71,6 +105,18 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
+    }
+
+    fun setPlayerStatus(isPlaying : Boolean) : Boolean{
+        if(isPlaying == true){
+            binding.mainMiniplayerBtn.visibility = View.VISIBLE
+            binding.mainPauseBtn.visibility = View.GONE
+            return false
+        } else {
+            binding.mainMiniplayerBtn.visibility = View.GONE
+            binding.mainPauseBtn.visibility = View.VISIBLE
+            return true
+        }
     }
 
     override fun onBackPressed() {
