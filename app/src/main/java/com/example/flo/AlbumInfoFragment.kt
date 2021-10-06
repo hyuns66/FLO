@@ -36,6 +36,8 @@ class AlbumInfoFragment : Fragment() {
             binding.albumInfoMainAlbumIv.setImageDrawable(drawable)
         }
 
+        binding.albumInfoMainTitleTv.isSelected = true
+
         //터치 이벤트를 위해 레이아웃 최상단에 위치시키는 작업
         binding.albumInfoIcBackIv.bringToFront()
         binding.albumInfoIcFavorite.bringToFront()
@@ -51,6 +53,23 @@ class AlbumInfoFragment : Fragment() {
             setFavoriteBtn(isfavorite)
             isfavorite = setFavoriteBtn(isfavorite)
             Log.d("isfavorite", isfavorite.toString())
+        }
+
+        // 내 취향 MIX 버튼
+        binding.albumInfoFavoriteMix.setOnClickListener{
+            if(binding.albumInfoFavoriteMixBtnOffIv.visibility == View.VISIBLE){
+                binding.albumInfoFavoriteMixBtnOnIv.visibility = View.VISIBLE
+                binding.albumInfoFavoriteMixBtnOffIv.visibility = View.GONE
+                binding.albumInfoMainAlbumIv.setImageResource(R.drawable.eminem_favorite_mix)
+                binding.albumInfoMainTitleTv.text = "Love The Way You Lie (피처링: Rihanna(리아나))"
+                binding.albumInfoMainArtistTv.text = "Eminem(에미넴)"
+            } else {
+                binding.albumInfoFavoriteMixBtnOnIv.visibility = View.GONE
+                binding.albumInfoFavoriteMixBtnOffIv.visibility = View.VISIBLE
+                binding.albumInfoMainAlbumIv.setImageResource(R.drawable.img_album_exp2)
+                binding.albumInfoMainTitleTv.text = "LILAC"
+                binding.albumInfoMainArtistTv.text = "아이유(IU)"
+            }
         }
         return binding.root
     }

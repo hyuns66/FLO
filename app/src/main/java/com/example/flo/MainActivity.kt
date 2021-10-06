@@ -16,6 +16,9 @@ import com.example.flo.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     var isPlaying = false
+    var isLike = false
+    var isUnlike = false
+    var isMixed = false
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
 
@@ -25,8 +28,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNavigation()
 
-        if(intent.hasExtra("isPlaying")){
+        if(intent.hasExtra("isPlaying") && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike")
+                &&intent.hasExtra("isMixed")){
             isPlaying = intent.getBooleanExtra("isPlaying", false)
+            isLike = intent.getBooleanExtra("isLike", false)
+            isUnlike = intent.getBooleanExtra("isUnlike", false)
+            isMixed = intent.getBooleanExtra("isMixed", false)
         }
 
         // 플레이어 뷰 초기화
@@ -46,6 +53,9 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("title", song.title)
             intent.putExtra("artist", song.artist)
             intent.putExtra("isPlaying", isPlaying)
+            intent.putExtra("isLike", isLike)
+            intent.putExtra("isUnlike", isUnlike)
+            intent.putExtra("isMixed", isMixed)
             startActivity(intent)
         }
 
@@ -136,7 +146,6 @@ class MainActivity : AppCompatActivity() {
     private fun initNavigation() {
         supportFragmentManager.beginTransaction().replace(R.id.main_frm, HomeFragment())
             .commitAllowingStateLoss()
-
     }
 
 }

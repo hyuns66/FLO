@@ -76,9 +76,12 @@
 
                 <TextView
                     android:id="@+id/album_info_main_title_tv"
-                    android:layout_width="wrap_content"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="7dp"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:gravity="center_horizontal"
                     android:text="(알수없음)"
                     android:textSize="20sp"
                     android:textColor="@color/black"
@@ -162,75 +165,87 @@
                 app:layout_constraintTop_toTopOf="@id/album_info_main_album_cv"
                 app:layout_constraintBottom_toBottomOf="@id/album_info_main_album_cv"/>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/album_info_favorite_mix_sb"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                app:layout_constraintTop_toBottomOf="@id/album_info_rg"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="내 취향 MIX"
-                android:gravity="center"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/lookaround_custom_btn_background"/>
 
-            <!--커스텀 라디오버튼-->
-            <RadioGroup
-                android:id="@+id/album_info_rg"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/album_info_favorite_mix"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/album_info_tab_layout"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/album_info_main_album_cv"
-                android:checkedButton="@id/album_info_contained_music_rb">
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center"
+                android:layout_marginTop="13dp"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="15dp"
+                android:background="@drawable/lookaround_custom_btn_background">
 
-                <RadioButton
-                    android:id="@+id/album_info_contained_music_rb"
+                <TextView
+                    android:id="@+id/album_info_favorite_mix_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
+                    android:text="내 취향 MIX"
+                    android:textSize="15sp"
+                    android:textColor="@color/black"/>
+
+                <ImageView
+                    android:id="@+id/album_info_favorite_mix_btn_off_iv"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/btn_toggle_off"/>
+
+                <ImageView
+                    android:id="@+id/album_info_favorite_mix_btn_on_iv"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/btn_toggle_on"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+
+            <!--커스텀 라디오버튼-->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/album_info_tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:tabRippleColor="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/album_info_main_album_cv">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="수록곡"
                     android:textSize="15sp"
                     android:textColor="@drawable/selector_album_info_radio_text"
                     android:background="@drawable/selector_album_info_radio_button"/>
 
-                <RadioButton
-                    android:id="@+id/album_info_more_info_rb"
+                <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
                     android:text="상세정보"
                     android:textSize="15sp"
                     android:textColor="@drawable/selector_album_info_radio_text"
                     android:background="@drawable/selector_album_info_radio_button"/>
 
-                <RadioButton
-                    android:id="@+id/album_info_movie_rb"
+                <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
                     android:text="영상"
                     android:textSize="15sp"
                     android:textColor="@drawable/selector_album_info_radio_text"
                     android:background="@drawable/selector_album_info_radio_button"/>
 
-            </RadioGroup>
+            </com.google.android.material.tabs.TabLayout>
 
             <!--전체선택, 전체듣기 버튼 레이아웃-->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/album_info_check_play_btns_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/album_info_favorite_mix_sb"
+                app:layout_constraintTop_toBottomOf="@id/album_info_favorite_mix"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 

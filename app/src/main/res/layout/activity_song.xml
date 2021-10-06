@@ -112,7 +112,7 @@
         app:layout_constraintTop_toBottomOf="@id/song_main_album_cv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/song_like_btn_iv"
+        app:layout_constraintBottom_toTopOf="@id/song_like_btn"
         android:gravity="center">
 
         <TextView
@@ -130,27 +130,60 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/song_like_btn_iv"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:src="@drawable/ic_my_like_off"
+    <FrameLayout
+        android:id="@+id/song_like_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/song_play_time_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintHorizontal_bias="0.4"
-        android:layout_marginBottom="25dp"/>
+        android:layout_marginBottom="25dp">
 
-    <ImageView
-        android:id="@+id/song_unlike_btn_iv"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:src="@drawable/btn_player_unlike_off"
+        <ImageView
+            android:id="@+id/song_like_btn_off_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_my_like_off"/>
+
+        <ImageView
+            android:id="@+id/song_like_btn_on_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_my_like_on"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/song_unlike_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/song_play_time_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.6"
-        android:layout_marginBottom="25dp"/>
+        android:layout_marginBottom="25dp">
+
+        <ImageView
+            android:id="@+id/song_unlike_btn_off_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="5dp"
+            android:src="@drawable/btn_player_unlike_off" />
+
+        <ImageView
+            android:id="@+id/song_unlike_btn_on_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="5dp"
+            android:src="@drawable/btn_player_unlike_on"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
 
     <!--플레이타임 레이아웃-->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -161,7 +194,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/song_play_btns_layout">
 
-        <TextView
+        <ProgressBar
             android:id="@+id/song_play_time_bar_tv"
             android:layout_width="match_parent"
             android:layout_height="3dp"
