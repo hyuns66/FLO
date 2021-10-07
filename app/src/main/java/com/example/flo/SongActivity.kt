@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivitySongBinding
 import java.util.zip.Inflater
@@ -49,9 +50,11 @@ class SongActivity : AppCompatActivity(){
             intent.putExtra("isPlaying", isPlaying)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
+            intent.putExtra("isMixed", isMixed)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
             finish()
+            Log.d("finish", "finish()")
         }
 
         // 재생, 일시정지 버튼
@@ -73,6 +76,9 @@ class SongActivity : AppCompatActivity(){
             Log.d("isLike", isLike.toString())
             setIconStatus(isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
             isLike = setIconStatus(isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
+            if(isLike == true){
+                Toast.makeText(this, "좋아요 표시한 플레이 리스트에 담았습니다.", Toast.LENGTH_SHORT).show()
+            }
             Log.d("isLike", isLike.toString())
         }
 
@@ -80,6 +86,9 @@ class SongActivity : AppCompatActivity(){
         binding.songUnlikeBtn.setOnClickListener{
             setIconStatus(isUnlike, binding.songUnlikeBtnOffIv, binding.songUnlikeBtnOnIv)
             isUnlike = setIconStatus(isUnlike, binding.songUnlikeBtnOffIv, binding.songUnlikeBtnOnIv)
+            if(isUnlike == true){
+                Toast.makeText(this, "더이상 이 곡을 표시하지 않습니다.",Toast.LENGTH_SHORT).show()
+            }
         }
 
         // 반복재생 버튼
