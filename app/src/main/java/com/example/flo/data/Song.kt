@@ -1,4 +1,4 @@
-package com.example.flo
+package com.example.flo.data
 
 import android.graphics.Bitmap
 import android.os.Parcelable

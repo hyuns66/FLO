@@ -1,14 +1,12 @@
-package com.example.flo
+package com.example.flo.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivitySongBinding
-import java.util.zip.Inflater
 
 class SongActivity : AppCompatActivity(){
 

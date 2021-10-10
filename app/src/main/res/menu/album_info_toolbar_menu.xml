@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/go_back"
+        android:title="뒤로가기"
+        android:icon="@drawable/btn_arrow_black"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/favorite"
+        android:title="좋아요"
+        android:icon="@drawable/ic_my_like_off"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/more"
+        android:title="더보기"
+        android:icon="@drawable/btn_player_more"
+        app:showAsAction="always"/>
+</menu>

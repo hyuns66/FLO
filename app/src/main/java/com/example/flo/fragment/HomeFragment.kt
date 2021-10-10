@@ -1,16 +1,16 @@
-package com.example.flo
+package com.example.flo.fragment
 
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import com.example.flo.activity.MainActivity
+import com.example.flo.R
+import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentHomeBinding
 
 

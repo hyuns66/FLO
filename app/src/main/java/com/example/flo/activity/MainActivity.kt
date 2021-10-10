@@ -1,15 +1,18 @@
-package com.example.flo
+package com.example.flo.activity
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.commit
+import com.example.flo.fragment.HomeFragment
+import com.example.flo.fragment.LockerFragment
+import com.example.flo.fragment.LookFragment
+import com.example.flo.fragment.SearchFragment
+import com.example.flo.R
+import com.example.flo.data.Song
 import com.example.flo.databinding.ActivityMainBinding
 
 
