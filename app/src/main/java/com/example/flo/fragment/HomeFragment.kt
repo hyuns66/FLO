@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import com.example.flo.activity.MainActivity
 import com.example.flo.R
+import com.example.flo.adapter.HomeAdBannerAdapter
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentHomeBinding
 
@@ -17,10 +18,7 @@ import com.example.flo.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
@@ -49,6 +47,15 @@ class HomeFragment : Fragment() {
                     .addToBackStack(null)
                     .commitAllowingStateLoss()
         }
+
+        val homeAdBannerAdapter = HomeAdBannerAdapter(this)
+        homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
+        homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp2))
+        homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
+        homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp2))
+        homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
+
+        binding.homeAdBannerVp.adapter = homeAdBannerAdapter
 
         return binding.root
     }

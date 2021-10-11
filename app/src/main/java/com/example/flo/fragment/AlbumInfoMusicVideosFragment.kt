@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.flo.databinding.FragmentMusicVideosBinding
 
-class MusicVideosFragment : Fragment(){
+class AlbumInfoMusicVideosFragment : Fragment(){
 
     lateinit var binding : FragmentMusicVideosBinding
 

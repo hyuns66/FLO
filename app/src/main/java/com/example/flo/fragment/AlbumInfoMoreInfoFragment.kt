@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.flo.databinding.FragmentMoreInfoBinding
 
-class MoreInfoFragment : Fragment() {
+class AlbumInfoMoreInfoFragment : Fragment() {
 
     lateinit var binding : FragmentMoreInfoBinding
 

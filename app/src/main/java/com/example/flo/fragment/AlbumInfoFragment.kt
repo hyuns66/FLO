@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import com.example.flo.R
 import com.example.flo.adapter.AlbumInfoVpAdapter
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentAlbumInfoBinding
