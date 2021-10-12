@@ -5,15 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.flo.databinding.FragmentMusicVideosBinding
+import com.example.flo.databinding.FragmentAlbumInfoMusicVideosBinding
 
 class AlbumInfoMusicVideosFragment : Fragment(){
 
-    lateinit var binding : FragmentMusicVideosBinding
+    lateinit var binding : FragmentAlbumInfoMusicVideosBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        binding = FragmentMusicVideosBinding.inflate(inflater, container, false)
+        binding = FragmentAlbumInfoMusicVideosBinding.inflate(inflater, container, false)
 
         return binding.root
     }

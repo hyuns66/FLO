@@ -56,23 +56,6 @@ class AlbumInfoFragment : Fragment() {
             Log.d("isfavorite", isfavorite.toString())
         }
 
-        // 내 취향 MIX 버튼
-//        binding.albumInfoFavoriteMix.setOnClickListener{
-//            if(binding.albumInfoFavoriteMixBtnOffIv.visibility == View.VISIBLE){
-//                binding.albumInfoFavoriteMixBtnOnIv.visibility = View.VISIBLE
-//                binding.albumInfoFavoriteMixBtnOffIv.visibility = View.GONE
-//                binding.albumInfoMainAlbumIv.setImageResource(R.drawable.eminem_favorite_mix)
-//                binding.albumInfoMainTitleTv.text = "Love The Way You Lie (피처링: Rihanna(리아나))"
-//                binding.albumInfoMainArtistTv.text = "Eminem(에미넴)"
-//            } else {
-//                binding.albumInfoFavoriteMixBtnOnIv.visibility = View.GONE
-//                binding.albumInfoFavoriteMixBtnOffIv.visibility = View.VISIBLE
-//                binding.albumInfoMainAlbumIv.setImageResource(R.drawable.img_album_exp2)
-//                binding.albumInfoMainTitleTv.text = "LILAC"
-//                binding.albumInfoMainArtistTv.text = "아이유(IU)"
-//            }
-//        }
-
         val pagerAdapter = AlbumInfoVpAdapter(this)
         binding.albumInfoTabVp.adapter = pagerAdapter
 
@@ -88,6 +71,21 @@ class AlbumInfoFragment : Fragment() {
             binding.albumInfoIcFavoriteOffIv.visibility = View.GONE
             binding.albumInfoIcFavoriteOnIv.visibility = View.VISIBLE
             return true
+        }
+    }
+
+    fun setImageView(imgRes : Int) {
+        binding.albumInfoMainAlbumIv.setImageResource(imgRes)
+    }
+
+    fun setTextView(type : String, text : String){
+        when (type) {
+            "title" -> {
+                binding.albumInfoMainTitleTv.text = text
+            }
+            "artist" -> {
+                binding.albumInfoMainArtistTv.text = text
+            }
         }
     }
 }

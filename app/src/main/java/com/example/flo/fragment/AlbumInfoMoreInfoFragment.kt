@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.flo.databinding.FragmentMoreInfoBinding
+import com.example.flo.databinding.FragmentAlbumInfoMoreInfoBinding
 
 class AlbumInfoMoreInfoFragment : Fragment() {
 
-    lateinit var binding : FragmentMoreInfoBinding
+    lateinit var binding : FragmentAlbumInfoMoreInfoBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentMoreInfoBinding.inflate(inflater, container, false)
+        binding = FragmentAlbumInfoMoreInfoBinding.inflate(inflater, container, false)
 
         return binding.root
     }
