@@ -9,12 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.R
 import com.example.flo.adapter.AlbumInfoVpAdapter
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentAlbumInfoBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class AlbumInfoFragment : Fragment() {
+
+    val tab_items : ArrayList<String> = arrayListOf("수록곡", "상세정보", "영상")
 
     lateinit var binding : FragmentAlbumInfoBinding
     override fun onCreateView(inflater: LayoutInflater,
@@ -57,7 +61,15 @@ class AlbumInfoFragment : Fragment() {
         }
 
         val pagerAdapter = AlbumInfoVpAdapter(this)
-        binding.albumInfoTabVp.adapter = pagerAdapter
+
+        binding.albumInfoTabVp.apply {
+            adapter = pagerAdapter
+            overScrollMode = ViewPager2.OVER_SCROLL_NEVER
+        }
+
+        TabLayoutMediator(binding.albumInfoTabLayout, binding.albumInfoTabVp){
+            tab, position -> tab.text = tab_items[position]
+        }.attach()
 
         return binding.root
     }

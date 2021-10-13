@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.activity.MainActivity
 import com.example.flo.R
 import com.example.flo.adapter.HomeAdBannerAdapter
+import com.example.flo.adapter.HomeMainPannelAdapter
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentHomeBinding
 
@@ -21,13 +24,6 @@ class HomeFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-
-        binding.homeBackgroundIv.setOnClickListener{
-            parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, AlbumInfoFragment())
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss()
-        }
 
         binding.homeTodayAlbum1Layout.setOnClickListener{
             //프래그먼트로 넘겨줄 데이터 렌더링
@@ -48,17 +44,27 @@ class HomeFragment : Fragment() {
                     .commitAllowingStateLoss()
         }
 
+        // 배너광고 뷰페이저
         val homeAdBannerAdapter = HomeAdBannerAdapter(this)
         homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
         homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp2))
         homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
         homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp2))
         homeAdBannerAdapter.addFragment(HomeAdBannerFragmnet(R.drawable.img_home_viewpager_exp))
+        binding.homeAdBannerVp.apply {
+            adapter = homeAdBannerAdapter
+            overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        }
 
-        binding.homeAdBannerVp.adapter = homeAdBannerAdapter
+        // 매인 패널 뷰페이저
+        val homeMainPannelAdapter = HomeMainPannelAdapter(this)
+
+        binding.homeMainPannelVp.apply {
+            adapter = homeMainPannelAdapter
+            overScrollMode = ViewPager2.OVER_SCROLL_NEVER
+        }
+        binding.homeMainPannelIndicator.setViewPager2(binding.homeMainPannelVp)
 
         return binding.root
     }
-
-
 }

@@ -11,146 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/home_background_iv"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/home_main_pannel_vp"
             android:layout_width="match_parent"
-            android:layout_height="430dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_default_4_x_1"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="400dp"
+            android:scrollIndicators="bottom"
+            android:overScrollMode="never"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-        <ImageView
-            android:id="@+id/home_setting_icon_iv"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/btn_main_setting"
-            app:layout_constraintEnd_toEndOf="@id/home_background_iv"
-            app:layout_constraintTop_toTopOf="@id/home_background_iv"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="5dp"/>
-
-        <ImageView
-            android:id="@+id/home_ticket_icon_iv"
-            android:layout_width="65dp"
-            android:layout_height="45dp"
-            android:src="@drawable/btn_main_ticket"
-            app:layout_constraintEnd_toStartOf="@id/home_setting_icon_iv"
-            app:layout_constraintTop_toTopOf="@id/home_background_iv"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="30dp"/>
-
-        <ImageView
-            android:id="@+id/home_mike_icon_iv"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/btn_nugu"
-            app:layout_constraintEnd_toStartOf="@id/home_ticket_icon_iv"
-            app:layout_constraintTop_toTopOf="@+id/home_background_iv"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="30dp"/>
-
-        <TextView
-            android:id="@+id/home_background_title_tv"
-            android:layout_width="0dp"
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+            android:id="@+id/home_main_pannel_indicator"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="포근하게 덮어주는 꿈의 목소리"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="@+id/home_background_iv"
-            app:layout_constraintTop_toBottomOf="@id/home_ticket_icon_iv"
-            app:layout_constraintEnd_toStartOf="@id/home_background_play_button_iv"
+            app:dotsColor="#3f3fff"
+            app:dotsCornerRadius="8dp"
+            app:dotsSize="5dp"
+            app:dotsSpacing="4dp"
+            app:dotsWidthFactor="2.5"
+            app:selectedDotColor="#3f3fff"
+            app:progressMode="true"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="30dp"/>
-
-        <ImageView
-            android:id="@+id/home_background_play_button_iv"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/btn_panel_play_large"
-            app:layout_constraintEnd_toEndOf="@id/home_background_iv"
-            app:layout_constraintBottom_toBottomOf="@id/home_background_title_tv"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"/>
-
-        <TextView
-            android:id="@+id/home_background_music_info_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="총 27곡  2021.3.18"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@id/home_background_music_photo1_iv"
-            app:layout_constraintStart_toStartOf="@id/home_background_music_photo1_iv"
-            android:layout_marginBottom="15dp"/>
-        
-        <ImageView
-            android:id="@+id/home_background_music_photo1_iv"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/img_album_exp"
-            app:layout_constraintBottom_toTopOf="@id/home_background_music_photo2_iv"
-            app:layout_constraintStart_toStartOf="@id/home_background_iv"
-            android:layout_marginBottom="25dp"
-            android:layout_marginStart="35dp"/>
-        
-        <TextView
-            android:id="@+id/home_background_music_title1_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이제는 어떻게 사랑을 하나요"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@id/home_background_music_photo1_iv"
-            app:layout_constraintTop_toTopOf="@+id/home_background_music_photo1_iv"
-            app:layout_constraintBottom_toTopOf="@id/home_background_music_artist1_tv"
-            android:layout_marginStart="15dp"/>
-
-        <TextView
-            android:id="@+id/home_background_music_artist1_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="정효빈"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="@id/home_background_music_photo1_iv"
-            app:layout_constraintStart_toEndOf="@+id/home_background_music_photo1_iv"
-            app:layout_constraintTop_toBottomOf="@id/home_background_music_title1_tv"
-            android:layout_marginStart="15dp"/>
-
-        <ImageView
-            android:id="@+id/home_background_music_photo2_iv"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/img_album_exp"
-            app:layout_constraintBottom_toBottomOf="@id/home_background_iv"
-            app:layout_constraintStart_toStartOf="@id/home_background_iv"
-            android:layout_marginBottom="50dp"
-            android:layout_marginStart="35dp"
-            android:layout_marginTop="25dp"/>
-
-        <TextView
-            android:id="@+id/home_background_music_title2_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Everlasting Sunset"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@id/home_background_music_photo2_iv"
-            app:layout_constraintTop_toTopOf="@+id/home_background_music_photo2_iv"
-            app:layout_constraintBottom_toTopOf="@id/home_background_music_artist2_tv"
-            android:layout_marginStart="15dp"/>
-
-        <TextView
-            android:id="@+id/home_background_music_artist2_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="주니엘(JUNIEL)"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@id/home_background_music_photo2_iv"
-            app:layout_constraintTop_toBottomOf="@+id/home_background_music_title2_tv"
-            app:layout_constraintBottom_toBottomOf="@+id/home_background_music_photo2_iv"
-            android:layout_marginStart="15dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/home_main_pannel_vp"/>
 
         <TextView
             android:id="@+id/home_today_published_pannel_title_tv"
@@ -211,7 +96,7 @@
             android:id="@+id/home_today_published_pannel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/home_background_iv"
+            app:layout_constraintTop_toBottomOf="@id/home_main_pannel_indicator"
             app:layout_constraintStart_toStartOf="parent"
             android:scrollbars="none"
             android:layout_marginTop="50dp"

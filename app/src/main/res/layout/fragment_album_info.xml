@@ -208,6 +208,7 @@
                 android:id="@+id/album_info_tab_vp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:overScrollMode="never"
                 app:layout_constraintTop_toBottomOf="@id/album_info_tab_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
