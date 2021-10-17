@@ -18,7 +18,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class AlbumInfoFragment : Fragment() {
 
-    val tab_items : ArrayList<String> = arrayListOf("수록곡", "상세정보", "영상")
+    val tabItems : ArrayList<String> = arrayListOf("수록곡", "상세정보", "영상")
 
     lateinit var binding : FragmentAlbumInfoBinding
     override fun onCreateView(inflater: LayoutInflater,
@@ -68,7 +68,7 @@ class AlbumInfoFragment : Fragment() {
         }
 
         TabLayoutMediator(binding.albumInfoTabLayout, binding.albumInfoTabVp){
-            tab, position -> tab.text = tab_items[position]
+            tab, position -> tab.text = tabItems[position]
         }.attach()
 
         return binding.root
