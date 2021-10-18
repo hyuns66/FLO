@@ -57,7 +57,6 @@ class AlbumInfoFragment : Fragment() {
         binding.albumInfoIcFavorite.setOnClickListener{
             setFavoriteBtn(isfavorite)
             isfavorite = setFavoriteBtn(isfavorite)
-            Log.d("isfavorite", isfavorite.toString())
         }
 
         val pagerAdapter = AlbumInfoVpAdapter(this)

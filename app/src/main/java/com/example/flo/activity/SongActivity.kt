@@ -33,9 +33,6 @@ class SongActivity : AppCompatActivity(){
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
 
-        Log.d("isLike", isLike.toString())
-        Log.d("isUnLike", isUnlike.toString())
-
         // 뷰 초기화
         setIconStatus(isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
@@ -52,21 +49,18 @@ class SongActivity : AppCompatActivity(){
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
             finish()
-            Log.d("finish", "finish()")
         }
 
         // 재생, 일시정지 버튼
         binding.songPlayerControlBtn.setOnClickListener{
             setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             isPlaying = setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
-            Log.d("isPlaying", isPlaying.toString())
         }
 
         // 믹스재생 버튼
         binding.songPlayerRandomBtn.setOnClickListener{
             setIconStatus(isMixed, binding.songPlayerRandomBtnOffIv, binding.songPlayerRandomBtnOnIv)
             isMixed = setIconStatus(isMixed, binding.songPlayerRandomBtnOffIv, binding.songPlayerRandomBtnOnIv)
-            Log.d("isMixed", isMixed.toString())
         }
 
         // 좋아요 버튼
@@ -77,7 +71,6 @@ class SongActivity : AppCompatActivity(){
             if(isLike == true){
                 Toast.makeText(this, "좋아요 표시한 플레이 리스트에 담았습니다.", Toast.LENGTH_SHORT).show()
             }
-            Log.d("isLike", isLike.toString())
         }
 
         // 싫어요 버튼
@@ -135,9 +128,8 @@ class SongActivity : AppCompatActivity(){
         intent.putExtra("isLike", isLike)
         intent.putExtra("isUnlike", isUnlike)
         intent.putExtra("isMixed", isMixed)
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()
-        Log.d("finish", "finish()")
     }
 }
