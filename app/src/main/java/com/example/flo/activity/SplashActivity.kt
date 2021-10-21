@@ -16,6 +16,7 @@ class SplashActivity : AppCompatActivity(){
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //1.5초간 SplashActivity 보여주고 메인으로 인텐트
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
