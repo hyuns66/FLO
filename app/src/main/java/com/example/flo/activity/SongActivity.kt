@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.flo.data.Song
 import com.example.flo.databinding.ActivitySongBinding
 
 class SongActivity : AppCompatActivity(){
@@ -14,7 +16,8 @@ class SongActivity : AppCompatActivity(){
     var musicRepeatMode : Int = 0
     var isLike = false
     var isUnlike = false
-    private var isPlaying = false
+    private val song : Song = Song()
+    private lateinit var player : Player
     lateinit var binding : ActivitySongBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,25 +27,34 @@ class SongActivity : AppCompatActivity(){
 
         // 데이터 렌더링
         if(intent.hasExtra("title") && intent.hasExtra("artist") && intent.hasExtra("isPlaying")
-                && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike")){
-            binding.songTitleTv.text = intent.getStringExtra("title")
-            binding.songArtistTv.text = intent.getStringExtra("artist")
-            isPlaying = intent.getBooleanExtra("isPlaying", false)
+                && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike") && intent.hasExtra("playTime")){
+            song.title = intent.getStringExtra("title")!!
+            song.artist = intent.getStringExtra("artist")!!
+            song.playTime = intent.getIntExtra("playTime", 0)
+            song.isPlaying = intent.getBooleanExtra("isPlaying", false)
+
+            binding.songTitleTv.text = song.title
+            binding.songArtistTv.text = song.artist
+            binding.songPlayTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
 
         // 뷰 초기화
-        setIconStatus(isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
+        setIconStatus(song.isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
         setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
         setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
 
+        // Player() 스레드 생성
+        player = Player(song.playTime, song.isPlaying)
+        player.start()
+
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("isPlaying", isPlaying)
+            intent.putExtra("isPlaying", song.isPlaying)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
@@ -53,9 +65,13 @@ class SongActivity : AppCompatActivity(){
 
         // 재생, 일시정지 버튼
         binding.songPlayerControlBtn.setOnClickListener{
-            setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
-            isPlaying = setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+            setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+            song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+            player.isPlaying = song.isPlaying
         }
+
+        // 플레이타임 조절 리스너
+        binding.songPlayTimeBar.setOnSeekBarChangeListener(SeekbarListener())
 
         // 믹스재생 버튼
         binding.songPlayerRandomBtn.setOnClickListener{
@@ -124,12 +140,56 @@ class SongActivity : AppCompatActivity(){
 
     override fun onBackPressed() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("isPlaying", isPlaying)
+        intent.putExtra("isPlaying", song.isPlaying)
         intent.putExtra("isLike", isLike)
         intent.putExtra("isUnlike", isUnlike)
         intent.putExtra("isMixed", isMixed)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()
+    }
+
+    inner class SeekbarListener : SeekBar.OnSeekBarChangeListener{
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            player.millis = progress*(song.playTime)
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+        }
+
+    }
+    inner class Player(private val playTime : Int, var isPlaying : Boolean) : Thread(){
+        var millis = 0
+        private var time = 0
+
+        override fun run() {
+            try {
+                while (true){
+                    if (millis/1000 >= playTime){
+                        break
+                    } else {
+                        if(isPlaying){
+                            sleep(1)
+                            millis++
+
+                            runOnUiThread{
+                                binding.songPlayTimeBar.progress = millis/playTime
+                                binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", millis/1000/60, millis/1000%60)
+                            }
+                        }
+                    }
+                }
+            } catch (e : InterruptedException){
+                Log.d("interrupt", "쓰레드 종료")
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        player.interrupt()
+        super.onDestroy()
     }
 }

@@ -18,10 +18,10 @@ import com.example.flo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    var isPlaying = false
     var isLike = false
     var isUnlike = false
     var isMixed = false
+    private var song : Song = Song()
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
 
@@ -32,16 +32,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNavigation()
 
+        song = Song("LILAC", "아이유(IU)", false, 215, null)
+        setPlayerStatus(song)
+
         if(intent.hasExtra("isPlaying") && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike")
                 &&intent.hasExtra("isMixed")){
-            isPlaying = intent.getBooleanExtra("isPlaying", false)
+            song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
 
         // 플레이어 뷰 초기화
-        if(isPlaying == true){
+        if(song.isPlaying){
             binding.mainMiniplayerBtn.visibility = View.GONE
             binding.mainPauseBtn.visibility = View.VISIBLE
         } else {
@@ -49,14 +52,15 @@ class MainActivity : AppCompatActivity() {
             binding.mainPauseBtn.visibility = View.GONE
         }
 
-        val song = Song(binding.mainPlayerTitleTv.text.toString(), binding.mainPlayerArtistTv.text.toString(), null)
+//        val song = Song(binding.mainPlayerTitleTv.text.toString(), binding.mainPlayerArtistTv.text.toString(), null)
 
         // SongActivity intent
         binding.mainPlayerLayout.setOnClickListener{
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", song.title)
             intent.putExtra("artist", song.artist)
-            intent.putExtra("isPlaying", isPlaying)
+            intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("playTime", song.playTime)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
@@ -65,15 +69,15 @@ class MainActivity : AppCompatActivity() {
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
-            setPlayerStatus(isPlaying)
-            isPlaying = setPlayerStatus(isPlaying)
-            Log.d("isPlaying", isPlaying.toString())
+            setPlayerStatus(song)
+            song.isPlaying = setPlayerStatus(song)
+            Log.d("isPlaying", song.isPlaying.toString())
         }
 
         binding.mainPauseBtn.setOnClickListener{
-            setPlayerStatus(isPlaying)
-            isPlaying = setPlayerStatus(isPlaying)
-            Log.d("isPlaying", isPlaying.toString())
+            setPlayerStatus(song)
+            song.isPlaying = setPlayerStatus(song)
+            Log.d("isPlaying", song.isPlaying.toString())
         }
 
         // 바텀 네비게이션 뷰
@@ -121,8 +125,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun setPlayerStatus(isPlaying : Boolean) : Boolean{
-        if(isPlaying == true){
+    fun setPlayerStatus(song: Song) : Boolean{
+        binding.mainPlayerArtistTv.text = song.artist
+        binding.mainPlayerTitleTv.text = song.title
+        if(song.isPlaying){
             binding.mainMiniplayerBtn.visibility = View.VISIBLE
             binding.mainPauseBtn.visibility = View.GONE
             return false

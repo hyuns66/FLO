@@ -6,7 +6,9 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Song(
-        val title : String,
-        val artist : String,
-        val mainImgURL : Bitmap?
+        var title : String = "",
+        var artist : String = "",
+        var isPlaying : Boolean = false,
+        var playTime : Int = 0,
+        val mainImgURL : Bitmap? = null
 ) : Parcelable

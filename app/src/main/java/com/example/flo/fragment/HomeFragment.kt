@@ -16,10 +16,12 @@ import com.example.flo.adapter.HomeAdBannerAdapter
 import com.example.flo.adapter.HomeMainPannelAdapter
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentHomeBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
+    private val tabItems : ArrayList<String> = arrayListOf("","","","","")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -34,7 +36,7 @@ class HomeFragment : Fragment() {
             val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
             val bitmap = drawable.bitmap
 
-            val songData = Song(title.toString(), artist.toString(), bitmap)
+            val songData = Song(title.toString(), artist.toString(), false, 0, bitmap)
 
             setFragmentResult("requestKey", bundleOf("bundleKey" to songData))
 
@@ -63,8 +65,10 @@ class HomeFragment : Fragment() {
             adapter = homeMainPannelAdapter
             overScrollMode = ViewPager2.OVER_SCROLL_NEVER
         }
-        binding.homeMainPannelIndicator.setViewPager2(binding.homeMainPannelVp)
 
+        TabLayoutMediator(binding.homeMainPannelIndicator, binding.homeMainPannelVp){
+            tab, position -> tab.text = tabItems[position]
+        }.attach()
         return binding.root
     }
 }

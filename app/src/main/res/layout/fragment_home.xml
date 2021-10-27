@@ -23,11 +23,16 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/home_main_pannel_indicator"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_height="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/home_main_pannel_vp"/>
+            app:tabRippleColor="@null"
+            app:tabIndicatorColor="#3f3fff"
+            app:layout_constraintTop_toBottomOf="@id/home_main_pannel_vp"
+            app:tabBackground="@drawable/home_vp_indicator"
+            app:tabGravity="fill"
+            app:tabIndicatorHeight="0dp"/>
 
 <!--        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator-->
 <!--            android:id="@+id/home_main_pannel_indicator"-->

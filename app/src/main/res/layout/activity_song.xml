@@ -198,7 +198,7 @@
             android:id="@+id/song_play_time_bar"
             android:layout_width="match_parent"
             android:layout_height="10dp"
-            android:max="100"
+            android:max="1000"
             android:progress="0"
             android:background="@null"
             android:thumb="@null"
