@@ -9,7 +9,7 @@ import com.example.flo.R
 import com.example.flo.activity.MainActivity
 import com.example.flo.databinding.FragmentHomeMainPannelBinding
 
-class HomeMainPannelFragment : Fragment() {
+class HomeMainPannelFragment(val imgRes : Int, val title : String) : Fragment() {
     lateinit var binding : FragmentHomeMainPannelBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -22,6 +22,9 @@ class HomeMainPannelFragment : Fragment() {
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }
+
+        binding.homeBackgroundIv.setImageResource(imgRes)
+        binding.homeBackgroundTitleTv.text = title
         return binding.root
     }
 }

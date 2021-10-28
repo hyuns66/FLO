@@ -9,11 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.data.Song
 import com.example.flo.databinding.ActivitySongBinding
+import java.lang.Thread.yield
 
 class SongActivity : AppCompatActivity(){
 
     var isMixed = false
-    var musicRepeatMode : Int = 0
     var isLike = false
     var isUnlike = false
     private val song : Song = Song()
@@ -27,11 +27,14 @@ class SongActivity : AppCompatActivity(){
 
         // 데이터 렌더링
         if(intent.hasExtra("title") && intent.hasExtra("artist") && intent.hasExtra("isPlaying")
-                && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike") && intent.hasExtra("playTime")){
+                && intent.hasExtra("isLike") && intent.hasExtra("isUnlike") && intent.hasExtra("playTime")
+                && intent.hasExtra("currentMillis")){
             song.title = intent.getStringExtra("title")!!
             song.artist = intent.getStringExtra("artist")!!
             song.playTime = intent.getIntExtra("playTime", 0)
+            song.currentMillis = intent.getIntExtra("currentMillis", 0)
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
+            song.musicRepeatMode = intent.getIntExtra("musicRepeatMode", 0)
 
             binding.songTitleTv.text = song.title
             binding.songArtistTv.text = song.artist
@@ -46,15 +49,37 @@ class SongActivity : AppCompatActivity(){
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
         setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
         setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
+        binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
+        binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
+        when(song.musicRepeatMode){
+            0 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.VISIBLE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
+            }
+            1 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.VISIBLE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
+            }
+            2 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.VISIBLE
+            }
+        }
 
         // Player() 스레드 생성
-        player = Player(song.playTime, song.isPlaying)
+        player = Player(song.playTime, song.currentMillis,  song.isPlaying)
         player.start()
 
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("currentMillis", player.millis)
+            intent.putExtra("playTime", song.playTime)
+            intent.putExtra("musicRepeatMode", song.musicRepeatMode)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
@@ -68,6 +93,13 @@ class SongActivity : AppCompatActivity(){
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             player.isPlaying = song.isPlaying
+            if(song.musicRepeatMode == 0){
+                if (binding.songPlayTimeBar.progress == 1000){
+                    binding.songPlayTimeBar.progress = 0
+                    player = Player(song.playTime, 0, song.isPlaying)
+                    player.start()
+                }
+            }
         }
 
         // 플레이타임 조절 리스너
@@ -100,27 +132,24 @@ class SongActivity : AppCompatActivity(){
 
         // 반복재생 버튼
         binding.songPlayerRepeatBtn.setOnClickListener{
-            when(musicRepeatMode){
+            when(song.musicRepeatMode){
                 0 -> {
                     binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
                     binding.songPlayerRepeatBtn1Iv.visibility = View.VISIBLE
                     binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
-                    musicRepeatMode = 1
-                    Log.d("musicRepeatMode", musicRepeatMode.toString())
+                    song.musicRepeatMode = 1
                 }
                 1 -> {
                     binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
                     binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
                     binding.songPlayerRepeatBtn2Iv.visibility = View.VISIBLE
-                    musicRepeatMode = 2
-                    Log.d("musicRepeatMode", musicRepeatMode.toString())
+                    song.musicRepeatMode = 2
                 }
                 2 -> {
                     binding.songPlayerRepeatBtn0Iv.visibility = View.VISIBLE
                     binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
                     binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
-                    musicRepeatMode = 0
-                    Log.d("musicRepeatMode", musicRepeatMode.toString())
+                    song.musicRepeatMode = 0
                 }
             }
         }
@@ -141,6 +170,9 @@ class SongActivity : AppCompatActivity(){
     override fun onBackPressed() {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("isPlaying", song.isPlaying)
+        intent.putExtra("playTime", song.playTime)
+        intent.putExtra("currentMillis", player.millis)
+        intent.putExtra("musicRepeatMode", song.musicRepeatMode)
         intent.putExtra("isLike", isLike)
         intent.putExtra("isUnlike", isUnlike)
         intent.putExtra("isMixed", isMixed)
@@ -152,6 +184,7 @@ class SongActivity : AppCompatActivity(){
     inner class SeekbarListener : SeekBar.OnSeekBarChangeListener{
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             player.millis = progress*(song.playTime)
+            binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", player.millis/1000/60, player.millis/1000%60)
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -161,15 +194,24 @@ class SongActivity : AppCompatActivity(){
         }
 
     }
-    inner class Player(private val playTime : Int, var isPlaying : Boolean) : Thread(){
-        var millis = 0
-        private var time = 0
+    inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean) : Thread(){
+        var millis = currentMillis
 
         override fun run() {
             try {
                 while (true){
                     if (millis/1000 >= playTime){
-                        break
+                        if(song.musicRepeatMode == 0){
+                            runOnUiThread{
+                                setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+                                song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+                                player.isPlaying = song.isPlaying
+                            }
+                            break
+                        } else {
+                            millis = 0
+                        }
+                        continue
                     } else {
                         if(isPlaying){
                             sleep(1)

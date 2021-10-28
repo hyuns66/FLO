@@ -197,13 +197,15 @@
         <SeekBar
             android:id="@+id/song_play_time_bar"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
+            android:layout_height="15dp"
             android:max="1000"
             android:progress="0"
             android:background="@null"
             android:thumb="@null"
-            android:progressDrawable="@drawable/custom_seekbar_drawable"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             android:layout_marginHorizontal="10dp"
+            android:progressDrawable="@drawable/custom_seekbar_drawable"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>

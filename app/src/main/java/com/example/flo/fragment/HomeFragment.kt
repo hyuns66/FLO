@@ -2,6 +2,9 @@ package com.example.flo.fragment
 
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +24,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
+    private var pagerHandler = Handler(Looper.getMainLooper())
     private val tabItems : ArrayList<String> = arrayListOf("","","","","")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -36,7 +40,7 @@ class HomeFragment : Fragment() {
             val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
             val bitmap = drawable.bitmap
 
-            val songData = Song(title.toString(), artist.toString(), false, 0, bitmap)
+            val songData = Song(title.toString(), artist.toString(), false, 0, 0, 0, bitmap)
 
             setFragmentResult("requestKey", bundleOf("bundleKey" to songData))
 
@@ -45,6 +49,9 @@ class HomeFragment : Fragment() {
                     .addToBackStack(null)
                     .commitAllowingStateLoss()
         }
+
+        val swiper = AutoPannelSwipe()
+        swiper.start()
 
         // 배너광고 뷰페이저
         val homeAdBannerAdapter = HomeAdBannerAdapter(this)
@@ -60,6 +67,11 @@ class HomeFragment : Fragment() {
 
         // 매인 패널 뷰페이저
         val homeMainPannelAdapter = HomeMainPannelAdapter(this)
+        homeMainPannelAdapter.addFragment(HomeMainPannelFragment(R.drawable.img_default_4_x_1, "포근하게 덮어주는 꿈의 목소리"))
+        homeMainPannelAdapter.addFragment(HomeMainPannelFragment(R.drawable.img_home_pannel_1, "스카이웨이 드라이브 감성뮤직"))
+        homeMainPannelAdapter.addFragment(HomeMainPannelFragment(R.drawable.img_home_pannel_2, "지친 하루에 차 안에서 듣는 위로"))
+        homeMainPannelAdapter.addFragment(HomeMainPannelFragment(R.drawable.img_home_pannel_3, "집중이 필요할 때, 내 방 도서관"))
+        homeMainPannelAdapter.addFragment(HomeMainPannelFragment(R.drawable.img_home_pannel_4, "연인과 밤 산책하며 듣는 감성 팝"))
 
         binding.homeMainPannelVp.apply {
             adapter = homeMainPannelAdapter
@@ -71,4 +83,28 @@ class HomeFragment : Fragment() {
         }.attach()
         return binding.root
     }
+
+    inner class AutoPannelSwipe : Thread(){
+        override fun run() {
+            try {
+                while (true){
+                    sleep(4000)
+                    pagerHandler.post{
+                        var position = binding.homeMainPannelVp.currentItem
+                        Log.d("position", position.toString())
+                        if(position == 4){
+                            position = 0
+                            binding.homeMainPannelVp.setCurrentItem(position)
+                        } else {
+                            position++
+                            binding.homeMainPannelVp.setCurrentItem(position)
+                        }
+                    }
+                }
+            } catch (e: InterruptedException){
+                Log.d("interrupt", "쓰레드 종료")
+            }
+        }
+    }
+
 }

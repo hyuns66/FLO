@@ -10,5 +10,7 @@ data class Song(
         var artist : String = "",
         var isPlaying : Boolean = false,
         var playTime : Int = 0,
+        var currentMillis : Int = 0,
+        var musicRepeatMode : Int = 0,
         val mainImgURL : Bitmap? = null
 ) : Parcelable

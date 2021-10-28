@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dp">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/home_main_pannel_vp"
@@ -33,22 +34,6 @@
             app:tabBackground="@drawable/home_vp_indicator"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"/>
-
-<!--        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator-->
-<!--            android:id="@+id/home_main_pannel_indicator"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:dotsColor="#3f3fff"-->
-<!--            app:dotsCornerRadius="8dp"-->
-<!--            app:dotsSize="5dp"-->
-<!--            app:dotsSpacing="4dp"-->
-<!--            app:dotsWidthFactor="2.5"-->
-<!--            app:selectedDotColor="#3f3fff"-->
-<!--            app:progressMode="true"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/home_main_pannel_vp"/>-->
 
         <TextView
             android:id="@+id/home_today_published_pannel_title_tv"
@@ -211,7 +196,7 @@
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
                                 android:adjustViewBounds="true"
-                                android:src="@drawable/img_album_exp2"
+                                android:src="@drawable/img_album_exp3"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -233,7 +218,7 @@
                         android:id="@+id/home_today_album_2_title_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LILAC"
+                        android:text="strawberry moon"
                         android:textColor="@color/black"
                         android:layout_marginTop="5dp"
                         app:layout_constraintStart_toStartOf="@+id/home_today_album_2_cv"
@@ -275,7 +260,7 @@
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
                                 android:adjustViewBounds="true"
-                                android:src="@drawable/img_album_exp2"
+                                android:src="@drawable/img_album_exp4"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -297,7 +282,7 @@
                         android:id="@+id/home_today_album_3_title_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LILAC"
+                        android:text="Savage"
                         android:textColor="@color/black"
                         android:layout_marginTop="5dp"
                         app:layout_constraintStart_toStartOf="@+id/home_today_album_3_cv"
@@ -307,7 +292,7 @@
                         android:id="@+id/home_today_album_3_artist_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="아이유(IU)"
+                        android:text="에스파(aespa)"
                         app:layout_constraintStart_toStartOf="@+id/home_today_album_3_cv"
                         app:layout_constraintTop_toBottomOf="@id/home_today_album_3_title_tv"/>
 
@@ -339,7 +324,7 @@
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
                                 android:adjustViewBounds="true"
-                                android:src="@drawable/img_album_exp2"
+                                android:src="@drawable/img_album_exp5"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -361,7 +346,7 @@
                         android:id="@+id/home_today_album_4_title_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LILAC"
+                        android:text="Weekend"
                         android:textColor="@color/black"
                         android:layout_marginTop="5dp"
                         app:layout_constraintStart_toStartOf="@+id/home_today_album_4_cv"
@@ -371,7 +356,7 @@
                         android:id="@+id/home_today_album_4_artist_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="아이유(IU)"
+                        android:text="태연(TAEYEON)"
                         app:layout_constraintStart_toStartOf="@+id/home_today_album_4_cv"
                         app:layout_constraintTop_toBottomOf="@id/home_today_album_4_title_tv"/>
 
@@ -769,11 +754,8 @@
             app:layout_constraintTop_toBottomOf="@id/home_company_info_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="5dp"/>
-
-
-
-
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
