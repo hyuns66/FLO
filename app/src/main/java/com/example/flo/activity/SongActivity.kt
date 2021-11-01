@@ -1,6 +1,7 @@
 package com.example.flo.activity
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,6 +19,7 @@ class SongActivity : AppCompatActivity(){
     var isUnlike = false
     private val song : Song = Song()
     private lateinit var player : Player
+    lateinit var mediaPlayer : MediaPlayer?
     lateinit var binding : ActivitySongBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,10 +95,15 @@ class SongActivity : AppCompatActivity(){
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             player.isPlaying = song.isPlaying
-            if(song.musicRepeatMode == 0){
+            if(song.musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                 if (binding.songPlayTimeBar.progress == 1000){
                     binding.songPlayTimeBar.progress = 0
-                    player = Player(song.playTime, 0, song.isPlaying)
+                    song.currentMillis = 0
+                    player = Player(song.playTime, song.currentMillis, song.isPlaying)
+                    player.start()
+                } else {
+                    song.currentMillis = (binding.songPlayTimeBar.progress)*(song.playTime)
+                    player = Player(song.playTime, song.currentMillis, song.isPlaying)
                     player.start()
                 }
             }
@@ -203,8 +210,8 @@ class SongActivity : AppCompatActivity(){
                     if (millis/1000 >= playTime){
                         if(song.musicRepeatMode == 0){
                             runOnUiThread{
-                                setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
-                                song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+                                setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+                                song.isPlaying = setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
                                 player.isPlaying = song.isPlaying
                             }
                             break

@@ -68,12 +68,10 @@ class MainActivity : AppCompatActivity() {
             setPlayerStatus(song)
             song.isPlaying = true
             player.isPlaying = true
-            if(song.musicRepeatMode == 0){
-                if (binding.mainPlayTimeBar.progress == 1000){
+            if(song.musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                     binding.mainPlayTimeBar.progress = 0
                     player = Player(song.playTime, 0, song.isPlaying)
                     player.start()
-                }
             }
         }
 
