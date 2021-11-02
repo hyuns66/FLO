@@ -1,7 +1,9 @@
 package com.example.flo.activity
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     var isMixed = false
     private var song : Song = Song()
     lateinit var player : Player
+    var mediaPlayer: MediaPlayer? = null
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
 
@@ -34,13 +37,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNavigation()
 
-        song = Song("LILAC", "아이유(IU)", false, 215, 0, 0, null)
+        song = Song("LILAC", "아이유(IU)", false, "music_lilac", 215, 0, 0, null)
         setPlayerStatus(song)
 
         if(intent.hasExtra("isPlaying") && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike")
-                &&intent.hasExtra("isMixed") && intent.hasExtra("playTime")){
+                &&intent.hasExtra("isMixed") && intent.hasExtra("playTime") && intent.hasExtra("title")
+                &&intent.hasExtra("artist") && intent.hasExtra("music")){
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             song.currentMillis = intent.getIntExtra("currentMillis", 0)
+            Log.d("currentMilils", song.currentMillis.toString())
+            song.title = intent.getStringExtra("title")!!
+            song.artist = intent.getStringExtra("artist")!!
+            song.music = intent.getStringExtra("music")!!
             song.playTime = intent.getIntExtra("playTime", 215)
             song.musicRepeatMode = intent.getIntExtra("musicRepeatMode", 0)
             isLike = intent.getBooleanExtra("isLike", false)
@@ -62,6 +70,10 @@ class MainActivity : AppCompatActivity() {
         // 스레드 생성, 시작
         player = Player(song.playTime, song.currentMillis, song.isPlaying)
         player.start()
+
+        var music = resources.getIdentifier(song.music, "raw", this.packageName)
+
+
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
@@ -89,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("artist", song.artist)
             intent.putExtra("isPlaying", song.isPlaying)
             intent.putExtra("playTime", song.playTime)
+            intent.putExtra("music", song.music)
             intent.putExtra("musicRepeatMode", song.musicRepeatMode)
             intent.putExtra("currentMillis", player.millis)
             intent.putExtra("isLike", isLike)
@@ -146,14 +159,15 @@ class MainActivity : AppCompatActivity() {
         binding.mainPlayerArtistTv.text = song.artist
         binding.mainPlayerTitleTv.text = song.title
         if(song.isPlaying){
-            Log.d("isPlaying", "1")
             binding.mainMiniplayerBtn.visibility = View.VISIBLE
             binding.mainPauseBtn.visibility = View.GONE
+            mediaPlayer?.pause()
+            Log.d("pause", "Paused")
             return false
         } else {
-            Log.d("isPlaying", "2")
             binding.mainMiniplayerBtn.visibility = View.GONE
             binding.mainPauseBtn.visibility = View.VISIBLE
+            mediaPlayer?.start()
             return true
         }
     }

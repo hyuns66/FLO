@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
             val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
             val bitmap = drawable.bitmap
 
-            val songData = Song(title.toString(), artist.toString(), false, 0, 0, 0, bitmap)
+            val songData = Song(title.toString(), artist.toString(), false, "music_lilac",0, 0, 0, bitmap)
 
             setFragmentResult("requestKey", bundleOf("bundleKey" to songData))
 

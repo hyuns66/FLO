@@ -19,6 +19,7 @@
         </activity>
         <activity android:name=".activity.MainActivity"/>
         <activity android:name="com.example.flo.activity.SongActivity"/>
+        <service android:name=".service.MusicPlayerService"/>
     </application>
 
 </manifest>

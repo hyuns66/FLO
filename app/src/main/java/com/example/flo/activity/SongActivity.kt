@@ -19,7 +19,6 @@ class SongActivity : AppCompatActivity(){
     var isUnlike = false
     private val song : Song = Song()
     private lateinit var player : Player
-    lateinit var mediaPlayer : MediaPlayer?
     lateinit var binding : ActivitySongBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +29,10 @@ class SongActivity : AppCompatActivity(){
         // 데이터 렌더링
         if(intent.hasExtra("title") && intent.hasExtra("artist") && intent.hasExtra("isPlaying")
                 && intent.hasExtra("isLike") && intent.hasExtra("isUnlike") && intent.hasExtra("playTime")
-                && intent.hasExtra("currentMillis")){
+                && intent.hasExtra("currentMillis") && intent.hasExtra("music")){
             song.title = intent.getStringExtra("title")!!
             song.artist = intent.getStringExtra("artist")!!
+            song.music = intent.getStringExtra("music")!!
             song.playTime = intent.getIntExtra("playTime", 0)
             song.currentMillis = intent.getIntExtra("currentMillis", 0)
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
@@ -51,6 +51,7 @@ class SongActivity : AppCompatActivity(){
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
         setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
         setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
+
         binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
         binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
         when(song.musicRepeatMode){
@@ -81,6 +82,9 @@ class SongActivity : AppCompatActivity(){
             intent.putExtra("isPlaying", song.isPlaying)
             intent.putExtra("currentMillis", player.millis)
             intent.putExtra("playTime", song.playTime)
+            intent.putExtra("music", song.music)
+            intent.putExtra("title", song.title)
+            intent.putExtra("artist", song.artist)
             intent.putExtra("musicRepeatMode", song.musicRepeatMode)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
@@ -92,6 +96,12 @@ class SongActivity : AppCompatActivity(){
 
         // 재생, 일시정지 버튼
         binding.songPlayerControlBtn.setOnClickListener{
+            if(song.isPlaying == true){
+                (baseContext as MainActivity).mediaPlayer?.pause()
+                Log.d("pause", "Paused")
+            } else {
+                (baseContext as MainActivity).mediaPlayer?.start()
+            }
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             player.isPlaying = song.isPlaying
@@ -179,6 +189,9 @@ class SongActivity : AppCompatActivity(){
         intent.putExtra("isPlaying", song.isPlaying)
         intent.putExtra("playTime", song.playTime)
         intent.putExtra("currentMillis", player.millis)
+        intent.putExtra("title", song.title)
+        intent.putExtra("artist", song.artist)
+        intent.putExtra("music", song.music)
         intent.putExtra("musicRepeatMode", song.musicRepeatMode)
         intent.putExtra("isLike", isLike)
         intent.putExtra("isUnlike", isUnlike)
@@ -235,6 +248,12 @@ class SongActivity : AppCompatActivity(){
                 Log.d("interrupt", "쓰레드 종료")
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (baseContext as MainActivity).mediaPlayer?.pause()
+        player.isPlaying = false
     }
 
     override fun onDestroy() {
