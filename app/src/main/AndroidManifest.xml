@@ -17,7 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.MainActivity"
+            android:launchMode="singleTop"/>
         <activity android:name="com.example.flo.activity.SongActivity"/>
         <service android:name=".service.MusicPlayerService"/>
     </application>

@@ -62,6 +62,10 @@ class SongActivity : AppCompatActivity(){
 
         binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
         binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
+        if(song.isPlaying == true){
+            mediaPlayer?.seekTo(binding.songPlayTimeBar.progress*(song.playTime))
+            mediaPlayer?.start()
+        }
         when(song.musicRepeatMode){
             0 -> {
                 binding.songPlayerRepeatBtn0Iv.visibility = View.VISIBLE
@@ -86,6 +90,10 @@ class SongActivity : AppCompatActivity(){
 
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
+            mediaPlayer?.pause()
+            mediaPlayer?.release()
+            mediaPlayer = null
+
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isPlaying", song.isPlaying)
             intent.putExtra("currentMillis", player.millis)
@@ -107,6 +115,7 @@ class SongActivity : AppCompatActivity(){
             if(song.isPlaying == true){
                 mediaPlayer?.pause()
             } else {
+                mediaPlayer?.seekTo(binding.songPlayTimeBar.progress*(song.playTime))
                 mediaPlayer?.start()
             }
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
@@ -192,6 +201,10 @@ class SongActivity : AppCompatActivity(){
     }
 
     override fun onBackPressed() {
+        mediaPlayer?.pause()
+        mediaPlayer?.release()
+        mediaPlayer = null
+
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("isPlaying", song.isPlaying)
         intent.putExtra("playTime", song.playTime)
@@ -216,7 +229,6 @@ class SongActivity : AppCompatActivity(){
             if(fromUser){
                 mediaPlayer?.seekTo(progress*(song.playTime))
             }
-
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -263,17 +275,18 @@ class SongActivity : AppCompatActivity(){
     }
 
     override fun onPause() {
-        mediaPlayer?.pause()
-        player.isPlaying = false
-        song.isPlaying = false
-        song.currentMillis = player.millis
-        setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
-        // sharedPreferences
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        val songJson = gson.toJson(song)
-        editor.putString("song", songJson)
-        editor.apply()
+        Log.d("state", "Song onPause()")
+//        mediaPlayer?.pause()
+//        player.isPlaying = false
+//        song.isPlaying = false
+//        song.currentMillis = player.millis
+//        setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+//        // sharedPreferences
+//        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+//        val editor = sharedPreferences.edit()
+//        val songJson = gson.toJson(song)
+//        editor.putString("song", songJson)
+//        editor.apply()
         super.onPause()
     }
 

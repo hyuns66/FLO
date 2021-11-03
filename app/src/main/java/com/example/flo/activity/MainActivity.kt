@@ -27,50 +27,43 @@ class MainActivity : AppCompatActivity() {
     var isMixed = false
     private var song : Song = Song()
     private var gson : Gson = Gson()
+    private var mediaPlayer : MediaPlayer? = null
     lateinit var player : Player
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        Log.d("state", "Main onCreate()")
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
 
-
-        if(intent.hasExtra("isPlaying") && intent.hasExtra("isLike") &&intent.hasExtra("isUnlike")
-                &&intent.hasExtra("isMixed") && intent.hasExtra("playTime") && intent.hasExtra("title")
-                &&intent.hasExtra("artist") && intent.hasExtra("music")){
-            song.isPlaying = intent.getBooleanExtra("isPlaying", false)
-            song.currentMillis = intent.getIntExtra("currentMillis", 0)
-            Log.d("currentMilils", song.currentMillis.toString())
-            song.title = intent.getStringExtra("title")!!
-            song.artist = intent.getStringExtra("artist")!!
-            song.music = intent.getStringExtra("music")!!
-            song.playTime = intent.getIntExtra("playTime", 215)
-            song.musicRepeatMode = intent.getIntExtra("musicRepeatMode", 0)
-            isLike = intent.getBooleanExtra("isLike", false)
-            isUnlike = intent.getBooleanExtra("isUnlike", false)
-            isMixed = intent.getBooleanExtra("isMixed", false)
-        }
-
-        // 플레이어 뷰 초기화
-        if(song.isPlaying){
-            binding.mainMiniplayerBtn.visibility = View.GONE
-            binding.mainPauseBtn.visibility = View.VISIBLE
+        // sharedPreferences
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val songJson = sharedPreferences.getString("song", null)
+        song = if(songJson == null) {
+            Song("LILAC", "아이유(IU)", false, "music_lilac", 215, 0, 0, null)
         } else {
-            binding.mainMiniplayerBtn.visibility = View.VISIBLE
-            binding.mainPauseBtn.visibility = View.GONE
+            gson.fromJson(songJson, Song::class.java)
         }
 
+        // 뷰 초기화
         binding.mainPlayTimeBar.isEnabled = false
+        binding.mainMiniplayerBtn.visibility = View.VISIBLE
+        binding.mainPauseBtn.visibility = View.GONE
+        // 스레드 생성, 시작
+        player = Player(song.playTime, song.currentMillis, song.isPlaying)
+        player.start()
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
             setPlayerStatus(song)
             song.isPlaying = true
             player.isPlaying = true
+            mediaPlayer?.seekTo(binding.mainPlayTimeBar.progress*(song.playTime))
+            mediaPlayer?.start()
             if(song.musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                     binding.mainPlayTimeBar.progress = 0
                     player = Player(song.playTime, 0, song.isPlaying)
@@ -82,11 +75,16 @@ class MainActivity : AppCompatActivity() {
             setPlayerStatus(song)
             song.isPlaying = false
             player.isPlaying = false
+            mediaPlayer?.pause()
             Log.d("isPlaying", song.isPlaying.toString())
         }
 
         // SongActivity intent
         binding.mainPlayerLayout.setOnClickListener{
+            mediaPlayer?.pause()
+            mediaPlayer?.release()
+            mediaPlayer = null
+
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", song.title)
             intent.putExtra("artist", song.artist)
@@ -167,10 +165,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "'뒤로' 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
                 return
             } else {
+                mediaPlayer?.pause()
+                mediaPlayer?.release()
+                mediaPlayer = null
+
                 finish()
             }
         }
-        Log.d("fragmentStack", supportFragmentManager.backStackEntryCount.toString())
         super.onBackPressed()
     }
 
@@ -179,27 +180,83 @@ class MainActivity : AppCompatActivity() {
             .commitAllowingStateLoss()
     }
 
-    override fun onStart() {
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val songJson = sharedPreferences.getString("song", null)
-        song = if(songJson == null) {
-            Song("LILAC", "아이유(IU)", false, "music_lilac", 215, 0, 0, null)
-        } else {
-            gson.fromJson(songJson, Song::class.java)
+    override fun onNewIntent(intent: Intent?) {
+        Log.d("state", "Main onNewIntent()")
+        if(intent != null){
+            song.isPlaying = intent.getBooleanExtra("isPlaying", false)
+            song.currentMillis = intent.getIntExtra("currentMillis", 0)
+            song.title = intent.getStringExtra("title")!!
+            song.artist = intent.getStringExtra("artist")!!
+            song.music = intent.getStringExtra("music")!!
+            song.playTime = intent.getIntExtra("playTime", 215)
+            song.musicRepeatMode = intent.getIntExtra("musicRepeatMode", 0)
+            isLike = intent.getBooleanExtra("isLike", false)
+            isUnlike = intent.getBooleanExtra("isUnlike", false)
+            isMixed = intent.getBooleanExtra("isMixed", false)
+
+            Log.d("intent", "intented")
         }
 
-        binding.mainMiniplayerBtn.visibility = View.VISIBLE
-        binding.mainPauseBtn.visibility = View.GONE
-        binding.mainPlayTimeBar.progress = song.currentMillis/song.playTime
+        super.onNewIntent(intent)
+    }
 
-        // 스레드 생성, 시작
-        player = Player(song.playTime, song.currentMillis, song.isPlaying)
-        player.start()
+    override fun onResume() {
+        Log.d("state", "Main onResume()")
+
+        // 플레이어 뷰 초기화
+        if(song.isPlaying){
+            binding.mainMiniplayerBtn.visibility = View.GONE
+            binding.mainPauseBtn.visibility = View.VISIBLE
+        } else {
+            binding.mainMiniplayerBtn.visibility = View.VISIBLE
+            binding.mainPauseBtn.visibility = View.GONE
+        }
+        player.millis = song.currentMillis
+        player.isPlaying = song.isPlaying
+
+        binding.mainPlayTimeBar.progress = song.currentMillis/song.playTime
+        var music = resources.getIdentifier(song.music, "raw", this.packageName)
+        if(mediaPlayer == null){
+            mediaPlayer = MediaPlayer.create(this, music)
+            song.playTime = mediaPlayer?.duration!!/1000
+            mediaPlayer?.seekTo(binding.mainPlayTimeBar.progress*(song.playTime))
+            if(song.isPlaying){
+                mediaPlayer?.start()
+            }
+            Log.d("mediaPlayer", "created")
+        }
+        super.onResume()
+    }
+    override fun onStart() {
+        Log.d("state", "Main onStart()")
 
         super.onStart()
     }
 
+    override fun onRestart() {
+        Log.d("state","Main onRestart()")
+        super.onRestart()
+    }
+
+    override fun onStop() {
+        Log.d("state","Main onStop()")
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        Log.d("state","Main onDestroy()")
+        mediaPlayer?.pause()
+        mediaPlayer?.release()
+        mediaPlayer = null
+        player.isPlaying = false
+        song.isPlaying = false
+        song.currentMillis = player.millis
+        // sharedPreferences
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val songJson = gson.toJson(song)
+        editor.putString("song", songJson)
+        editor.apply()
         player.interrupt()
         super.onDestroy()
     }
