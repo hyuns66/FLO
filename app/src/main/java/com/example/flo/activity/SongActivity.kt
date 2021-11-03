@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.data.Song
 import com.example.flo.databinding.ActivitySongBinding
+import com.google.gson.Gson
 import java.lang.Thread.yield
 
 class SongActivity : AppCompatActivity(){
@@ -18,6 +19,8 @@ class SongActivity : AppCompatActivity(){
     var isLike = false
     var isUnlike = false
     private val song : Song = Song()
+    private var mediaPlayer: MediaPlayer? = null
+    private val gson : Gson = Gson()
     private lateinit var player : Player
     lateinit var binding : ActivitySongBinding
 
@@ -38,6 +41,11 @@ class SongActivity : AppCompatActivity(){
             song.isPlaying = intent.getBooleanExtra("isPlaying", false)
             song.musicRepeatMode = intent.getIntExtra("musicRepeatMode", 0)
 
+            var music = resources.getIdentifier(song.music, "raw", this.packageName)
+            if(mediaPlayer == null){
+                mediaPlayer = MediaPlayer.create(this, music)
+                song.playTime = mediaPlayer?.duration!!/1000
+            }
             binding.songTitleTv.text = song.title
             binding.songArtistTv.text = song.artist
             binding.songPlayTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
@@ -97,10 +105,9 @@ class SongActivity : AppCompatActivity(){
         // 재생, 일시정지 버튼
         binding.songPlayerControlBtn.setOnClickListener{
             if(song.isPlaying == true){
-                (baseContext as MainActivity).mediaPlayer?.pause()
-                Log.d("pause", "Paused")
+                mediaPlayer?.pause()
             } else {
-                (baseContext as MainActivity).mediaPlayer?.start()
+                mediaPlayer?.start()
             }
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
@@ -205,6 +212,11 @@ class SongActivity : AppCompatActivity(){
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             player.millis = progress*(song.playTime)
             binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", player.millis/1000/60, player.millis/1000%60)
+            // 사용자가 progress 조작 시 미디어플레이어 위치변경
+            if(fromUser){
+                mediaPlayer?.seekTo(progress*(song.playTime))
+            }
+
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -251,9 +263,18 @@ class SongActivity : AppCompatActivity(){
     }
 
     override fun onPause() {
-        super.onPause()
-        (baseContext as MainActivity).mediaPlayer?.pause()
+        mediaPlayer?.pause()
         player.isPlaying = false
+        song.isPlaying = false
+        song.currentMillis = player.millis
+        setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
+        // sharedPreferences
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val songJson = gson.toJson(song)
+        editor.putString("song", songJson)
+        editor.apply()
+        super.onPause()
     }
 
     override fun onDestroy() {
