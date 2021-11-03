@@ -3,6 +3,8 @@ package com.example.flo.activity
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -20,7 +22,6 @@ class SongActivity : AppCompatActivity(){
     var isUnlike = false
     private val song : Song = Song()
     private var mediaPlayer: MediaPlayer? = null
-    private val gson : Gson = Gson()
     private lateinit var player : Player
     lateinit var binding : ActivitySongBinding
 
@@ -254,6 +255,8 @@ class SongActivity : AppCompatActivity(){
                             break
                         } else {
                             millis = 0
+                            mediaPlayer?.seekTo(0)
+                            mediaPlayer?.start()
                         }
                         continue
                     } else {
