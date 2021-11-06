@@ -33,12 +33,12 @@ class AlbumInfoFragment : Fragment() {
             val result = bundle.getParcelable<Song>("bundleKey")
 
             //받아온 비트맵 데이터를 다시 drawable 데이터로 전환
-            val resource : Resources = this.resources
-            val drawable = BitmapDrawable(resource, result?.mainImgURL)
+//            val resource : Resources = this.resources
+//            val drawable = BitmapDrawable(resource, result?.mainImgURL)
 
             binding.albumInfoMainTitleTv.text = result?.title
             binding.albumInfoMainArtistTv.text = result?.artist
-            binding.albumInfoMainAlbumIv.setImageDrawable(drawable)
+            binding.albumInfoMainAlbumIv.setImageResource(result?.mainImgURL!!)
         }
 
         binding.albumInfoMainTitleTv.isSelected = true

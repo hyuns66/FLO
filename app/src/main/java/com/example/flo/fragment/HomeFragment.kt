@@ -37,10 +37,10 @@ class HomeFragment : Fragment() {
             val artist = binding.homeTodayAlbum1ArtistTv.text
 
             //이미지의 경우 drawable 데이터를 비트맵 데이터로 전환
-            val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
-            val bitmap = drawable.bitmap
+//            val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
+//            val bitmap = drawable.bitmap
 
-            val songData = Song(title.toString(), artist.toString(), false, "music_lilac",0, 0, 0, bitmap)
+            val songData = Song(title.toString(), artist.toString(), false, "music_lilac",0, 0, 0, R.drawable.img_album_exp2)
 
             setFragmentResult("requestKey", bundleOf("bundleKey" to songData))
 
