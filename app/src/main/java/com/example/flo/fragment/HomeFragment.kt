@@ -11,47 +11,58 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.activity.MainActivity
 import com.example.flo.R
 import com.example.flo.adapter.HomeAdBannerAdapter
+import com.example.flo.adapter.HomeAlbumRvAdapter
 import com.example.flo.adapter.HomeMainPannelAdapter
+import com.example.flo.data.HomeAlbum
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
+    private var gson : Gson = Gson()
     private var pagerHandler = Handler(Looper.getMainLooper())
+    private var albumDatas = arrayListOf<HomeAlbum>()
     private val tabItems : ArrayList<String> = arrayListOf("","","","","")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        binding.homeTodayAlbum1Layout.setOnClickListener{
-            //프래그먼트로 넘겨줄 데이터 렌더링
-            val title = binding.homeTodayAlbum1TitleTv.text
-            val artist = binding.homeTodayAlbum1ArtistTv.text
-
-            //이미지의 경우 drawable 데이터를 비트맵 데이터로 전환
-//            val drawable = binding.homeTodayAlbum1Iv.drawable as BitmapDrawable
-//            val bitmap = drawable.bitmap
-
-            val songData = Song(title.toString(), artist.toString(), false, "music_lilac",0, 0, 0, R.drawable.img_album_exp2)
-
-            setFragmentResult("requestKey", bundleOf("bundleKey" to songData))
-
-            (context as MainActivity).supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, AlbumInfoFragment())
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss()
-        }
-
+        // 메인 패널 자동 스와이프 스레드 생성
         val swiper = AutoPannelSwipe()
         swiper.start()
+
+        // 데이터리스트 더미데이터 생성
+        albumDatas.clear()
+        albumDatas.apply {
+            add(HomeAlbum("LILAC", "아이유(IU)", R.drawable.img_album_exp2))
+            add(HomeAlbum("strawberry moon", "아이유(IU)", R.drawable.img_album_exp3))
+            add(HomeAlbum("Savage", "에스파(asepa)", R.drawable.img_album_exp4))
+            add(HomeAlbum("Weekend", "태연(TAEYEON)", R.drawable.img_album_exp5))
+        }
+
+        // 오늘 발매음악 리사이클러뷰 어댑터 연결
+        val todayPublishedAdapter = HomeAlbumRvAdapter(albumDatas)
+        binding.homeTodayPublishedAlbumRv.apply {
+            adapter = todayPublishedAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        }
+        todayPublishedAdapter.setItemClickListener(object : HomeAlbumRvAdapter.ItemClickListener{
+            override fun onItemClick(homeAlbum: HomeAlbum) {
+                changeAlbumFragment(homeAlbum)
+            }
+        })
+
 
         // 배너광고 뷰페이저
         val homeAdBannerAdapter = HomeAdBannerAdapter(this)
@@ -82,6 +93,18 @@ class HomeFragment : Fragment() {
             tab, position -> tab.text = tabItems[position]
         }.attach()
         return binding.root
+    }
+
+    private fun changeAlbumFragment(homeAlbum: HomeAlbum) {
+        (context as MainActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, AlbumInfoFragment().apply {
+                    arguments = Bundle().apply {
+                        val albumJson = gson.toJson(homeAlbum)
+                        putString("albumData", albumJson)
+                    }
+                })
+                .addToBackStack(null)
+                .commitAllowingStateLoss()
     }
 
     inner class AutoPannelSwipe : Thread(){

@@ -12,15 +12,18 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.R
 import com.example.flo.adapter.AlbumInfoVpAdapter
+import com.example.flo.data.HomeAlbum
 import com.example.flo.data.Song
 import com.example.flo.databinding.FragmentAlbumInfoBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 
 class AlbumInfoFragment : Fragment() {
 
+    val gson : Gson = Gson()
     val tabItems : ArrayList<String> = arrayListOf("수록곡", "상세정보", "영상")
-
     lateinit var binding : FragmentAlbumInfoBinding
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -29,17 +32,13 @@ class AlbumInfoFragment : Fragment() {
         binding = FragmentAlbumInfoBinding.inflate(inflater, container, false)
 
         //데이터 렌더링
-        setFragmentResultListener("requestKey"){ requestKey, bundle ->
-            val result = bundle.getParcelable<Song>("bundleKey")
+        val albumData = arguments?.getString("albumData")
+        val homeAlbum = gson.fromJson(albumData, HomeAlbum::class.java)
 
-            //받아온 비트맵 데이터를 다시 drawable 데이터로 전환
-//            val resource : Resources = this.resources
-//            val drawable = BitmapDrawable(resource, result?.mainImgURL)
-
-            binding.albumInfoMainTitleTv.text = result?.title
-            binding.albumInfoMainArtistTv.text = result?.artist
-            binding.albumInfoMainAlbumIv.setImageResource(result?.mainImgURL!!)
-        }
+        // 뷰 초기화
+        binding.albumInfoMainTitleTv.text = homeAlbum?.title
+        binding.albumInfoMainArtistTv.text = homeAlbum?.artist
+        binding.albumInfoMainAlbumIv.setImageResource(homeAlbum?.coverImg!!)
 
         binding.albumInfoMainTitleTv.isSelected = true
 
