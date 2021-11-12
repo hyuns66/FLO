@@ -1,10 +1,11 @@
 package com.example.flo.activity
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.IBinder
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -12,9 +13,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.data.Song
 import com.example.flo.databinding.ActivitySongBinding
-import com.example.flo.service.MusicPlayerService
+import com.example.flo.service.MediaPlayerService
 import com.google.gson.Gson
-import java.lang.Thread.yield
 
 class SongActivity : AppCompatActivity(){
 
@@ -23,6 +23,8 @@ class SongActivity : AppCompatActivity(){
     var isUnlike = false
     private var song : Song = Song()
     private val gson : Gson = Gson()
+    private lateinit var mediaPlayerService : MediaPlayerService
+    private var isServiceBound = false
     private lateinit var player : Player
     lateinit var binding : ActivitySongBinding
 
@@ -31,7 +33,6 @@ class SongActivity : AppCompatActivity(){
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val serviceIntent = Intent(this,MusicPlayerService::class.java)
         // 데이터 렌더링
         if(intent.hasExtra("songJson") && intent.hasExtra("isLike")
                 && intent.hasExtra("isMixed") && intent.hasExtra("isUnlike")){
@@ -39,19 +40,24 @@ class SongActivity : AppCompatActivity(){
 
             binding.songTitleTv.text = song.title
             binding.songArtistTv.text = song.artist
-            binding.songPlayTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
-            Log.d("playtime", song.playTime.toString())
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
+
+        // Player() 스레드 생성
+        val serviceIntent = Intent(this,MediaPlayerService::class.java)
+        player = Player(song.playTime, song.currentMillis,  song.isPlaying)
+        player.start()
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
+        Log.d("initialized", "1")
 
         // 뷰 초기화
         setIconStatus(song.isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
         setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
         setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
-
+        Log.d("initialized", "2")
         binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
         binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
 
@@ -73,10 +79,6 @@ class SongActivity : AppCompatActivity(){
             }
         }
 
-        // Player() 스레드 생성
-        player = Player(song.playTime, song.currentMillis,  song.isPlaying, serviceIntent)
-        player.start()
-
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
 
@@ -94,24 +96,22 @@ class SongActivity : AppCompatActivity(){
         // 재생, 일시정지 버튼
         binding.songPlayerControlBtn.setOnClickListener{
             if(song.isPlaying){
-                val intent = Intent(this, MusicPlayerService::class.java)
-                stopService(intent)
+                mediaPlayerService.stopMusic()
+                song.currentMillis = player.millis
             } else {
                 if(song.musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                     if (binding.songPlayTimeBar.progress == 1000){
                         binding.songPlayTimeBar.progress = 0
                         song.currentMillis = 0
-                        player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
+                        player = Player(song.playTime, song.currentMillis, song.isPlaying)
                         player.start()
                     } else {
                         song.currentMillis = (binding.songPlayTimeBar.progress)*(song.playTime)
-                        player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
+                        player = Player(song.playTime, song.currentMillis, song.isPlaying)
                         player.start()
                     }
                 }
-                serviceIntent.putExtra("musicService", song.music)
-                serviceIntent.putExtra("millisService", player.millis)
-                startService(serviceIntent)
+                mediaPlayerService.playMusic(song)
             }
             setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             song.isPlaying = setIconStatus(song.isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
@@ -119,7 +119,7 @@ class SongActivity : AppCompatActivity(){
         }
 
         // 플레이타임 조절 리스너
-        binding.songPlayTimeBar.setOnSeekBarChangeListener(SeekbarListener(serviceIntent!!))
+        binding.songPlayTimeBar.setOnSeekBarChangeListener(SeekbarListener())
 
         // 믹스재생 버튼
         binding.songPlayerRandomBtn.setOnClickListener{
@@ -196,33 +196,32 @@ class SongActivity : AppCompatActivity(){
         finish()
     }
 
-    inner class SeekbarListener(private val intent: Intent) : SeekBar.OnSeekBarChangeListener{
+    inner class SeekbarListener() : SeekBar.OnSeekBarChangeListener{
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             player.millis = progress*(song.playTime)
             binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", player.millis/1000/60, player.millis/1000%60)
         }
 
         override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            stopService(intent)
+            mediaPlayerService.stopMusic()
         }
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            intent.putExtra("millisService", player.millis)
-            intent.putExtra("musicService", song.music)
             if(song.isPlaying){
-                startService(intent)
+                song.currentMillis = player.millis
+                mediaPlayerService.playMusic(song)
             }
         }
 
     }
-    inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean, val intent : Intent) : Thread(){
+    inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean) : Thread(){
         var millis = currentMillis
 
         override fun run() {
             try {
                 while (true){
                     if (millis/1000 >= playTime){
-                        stopService(intent)
+                        mediaPlayerService.stopMusic()
                         if(song.musicRepeatMode == 0){
                             runOnUiThread{
                                 setIconStatus(true, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
@@ -232,9 +231,8 @@ class SongActivity : AppCompatActivity(){
                             break
                         } else {
                             millis = 0
-                            intent.putExtra("musicService", song.music)
-                            intent.putExtra("millisService", millis)
-                            startService(intent)
+                            song.currentMillis = 0
+                            mediaPlayerService.playMusic(song)
                         }
                         continue
                     } else {
@@ -255,6 +253,11 @@ class SongActivity : AppCompatActivity(){
         }
     }
 
+    override fun onStart() {
+        Log.d("state", "Song onStart()")
+        super.onStart()
+        Log.d("initialized", "3")
+    }
     override fun onPause() {
         Log.d("state", "Song onPause()")
         super.onPause()
@@ -262,6 +265,23 @@ class SongActivity : AppCompatActivity(){
 
     override fun onDestroy() {
         player.interrupt()
+        unbindService(connection)
         super.onDestroy()
+    }
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MediaPlayerService.LocalBinder
+            mediaPlayerService = binder.getService()
+            Log.d("initialized", "mediaPlayer initialized!!!")
+            mediaPlayerService.initService(song)
+            binding.songPlayTimeTv.text = String.format("%02d:%02d", mediaPlayerService.playTime/1000/60, mediaPlayerService.playTime/1000%60)
+            isServiceBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isServiceBound = false
+        }
+
     }
 }

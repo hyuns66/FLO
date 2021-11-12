@@ -20,7 +20,7 @@
         <activity android:name=".activity.MainActivity"
             android:launchMode="singleTop"/>
         <activity android:name="com.example.flo.activity.SongActivity"/>
-        <service android:name=".service.MusicPlayerService"/>
+        <service android:name=".service.MediaPlayerService"/>
     </application>
 
 </manifest>

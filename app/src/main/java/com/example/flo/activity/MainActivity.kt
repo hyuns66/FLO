@@ -1,11 +1,13 @@
 package com.example.flo.activity
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.provider.MediaStore
+import android.os.IBinder
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +19,7 @@ import com.example.flo.fragment.SearchFragment
 import com.example.flo.R
 import com.example.flo.data.Song
 import com.example.flo.databinding.ActivityMainBinding
-import com.example.flo.service.MusicPlayerService
+import com.example.flo.service.MediaPlayerService
 import com.google.gson.Gson
 
 
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private var song : Song = Song()
     private var gson : Gson = Gson()
     private var mediaPlayer : MediaPlayer? = null
+    private lateinit var mediaPlayerService : MediaPlayerService
+    private var isServiceBound = false
     lateinit var player : Player
     lateinit var binding: ActivityMainBinding
     var backPressedTime : Long = 0
@@ -41,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initNavigation()
 
-        val serviceIntent = Intent(this,MusicPlayerService::class.java)
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
         val songJson = sharedPreferences.getString("song", null)
@@ -56,8 +59,10 @@ class MainActivity : AppCompatActivity() {
         binding.mainMiniplayerBtn.visibility = View.VISIBLE
         binding.mainPauseBtn.visibility = View.GONE
         // 스레드 생성, 시작
+        val serviceIntent = Intent(this,MediaPlayerService::class.java)
         player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
         player.start()
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
@@ -74,24 +79,18 @@ class MainActivity : AppCompatActivity() {
                     song.currentMillis = (binding.mainPlayTimeBar.progress)*(song.playTime)
                 }
             }
-            serviceIntent.putExtra("musicService", song.music)
-            serviceIntent.putExtra("millisService", player.millis)
-            startService(serviceIntent)
+            mediaPlayerService.playMusic(song)
         }
 
         binding.mainPauseBtn.setOnClickListener{
             setPlayerStatus(song)
             song.isPlaying = false
             player.isPlaying = false
-            val intent = Intent(this, MusicPlayerService::class.java)
-            stopService(intent)
+            mediaPlayerService.stopMusic()
         }
 
         // SongActivity intent
         binding.mainPlayerLayout.setOnClickListener{
-            mediaPlayer?.pause()
-            mediaPlayer?.release()
-            mediaPlayer = null
 
             val intent = Intent(this, SongActivity::class.java)
             song.currentMillis = player.millis
@@ -214,7 +213,6 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onStart() {
         Log.d("state", "Main onStart()")
-
         super.onStart()
     }
 
@@ -240,7 +238,22 @@ class MainActivity : AppCompatActivity() {
         editor.putString("song", songJson)
         editor.apply()
         player.interrupt()
+        unbindService(connection)
         super.onDestroy()
+    }
+
+    private val connection = object : ServiceConnection{
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MediaPlayerService.LocalBinder
+            mediaPlayerService = binder.getService()
+            mediaPlayerService.initService(song)
+            isServiceBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isServiceBound = false
+        }
+
     }
 
     inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean , val intent: Intent) : Thread(){
@@ -250,7 +263,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 while (true){
                     if (millis/1000 >= playTime){
-                        stopService(intent)
+                        mediaPlayerService.stopMusic()
                         if(song.musicRepeatMode == 0){
                             runOnUiThread{
                                 setPlayerStatus(song)
@@ -260,9 +273,8 @@ class MainActivity : AppCompatActivity() {
                             break
                         } else {
                             millis = 0
-                            intent.putExtra("musicService", song.music)
-                            intent.putExtra("millisService", millis)
-                            startService(intent)
+                            song.currentMillis = 0
+                            mediaPlayerService.playMusic(song)
                         }
                         continue
                     } else {
