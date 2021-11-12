@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
         val songJson = sharedPreferences.getString("song", null)
         song = if(songJson == null) {
-            Song("LILAC", "아이유(IU)", false, "music_lilac", 215, 0, 0, R.drawable.img_album_exp2)
+            Song("LILAC", "아이유(IU)", false, "iu_lilac", 215, 0, 0, R.drawable.img_album_exp2)
         } else {
             gson.fromJson(songJson, Song::class.java)
         }
@@ -230,9 +230,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         Log.d("state","Main onDestroy()")
-        mediaPlayer?.pause()
-        mediaPlayer?.release()
-        mediaPlayer = null
         player.isPlaying = false
         song.isPlaying = false
         song.currentMillis = player.millis

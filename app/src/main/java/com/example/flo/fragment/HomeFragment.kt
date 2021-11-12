@@ -37,6 +37,7 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        Log.d("state", "Home onCreate()")
         // 메인 패널 자동 스와이프 스레드 생성
         val swiper = AutoPannelSwipe()
         swiper.start()
@@ -114,7 +115,6 @@ class HomeFragment : Fragment() {
                     sleep(4000)
                     pagerHandler.post{
                         var position = binding.homeMainPannelVp.currentItem
-                        Log.d("position", position.toString())
                         if(position == 4){
                             position = 0
                             binding.homeMainPannelVp.setCurrentItem(position)

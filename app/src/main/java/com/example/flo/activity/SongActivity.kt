@@ -2,7 +2,6 @@ package com.example.flo.activity
 
 import android.content.Context
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -24,7 +23,6 @@ class SongActivity : AppCompatActivity(){
     var isUnlike = false
     private var song : Song = Song()
     private val gson : Gson = Gson()
-    private var mediaPlayer: MediaPlayer? = null
     private lateinit var player : Player
     lateinit var binding : ActivitySongBinding
 
@@ -39,14 +37,10 @@ class SongActivity : AppCompatActivity(){
                 && intent.hasExtra("isMixed") && intent.hasExtra("isUnlike")){
             song = intent.getParcelableExtra<Song>("songJson")!!
 
-//            val music = resources.getIdentifier(song.music, "raw", this.packageName)
-//            if(mediaPlayer == null){
-//                mediaPlayer = MediaPlayer.create(this, music)
-//                song.playTime = mediaPlayer?.duration!!/1000
-//            }
             binding.songTitleTv.text = song.title
             binding.songArtistTv.text = song.artist
             binding.songPlayTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
+            Log.d("playtime", song.playTime.toString())
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
@@ -85,9 +79,6 @@ class SongActivity : AppCompatActivity(){
 
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
-            mediaPlayer?.pause()
-            mediaPlayer?.release()
-            mediaPlayer = null
 
             val intent = Intent(this, MainActivity::class.java)
             song.currentMillis = player.millis
@@ -95,7 +86,7 @@ class SongActivity : AppCompatActivity(){
             intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
         }
@@ -193,9 +184,6 @@ class SongActivity : AppCompatActivity(){
     }
 
     override fun onBackPressed() {
-        mediaPlayer?.pause()
-        mediaPlayer?.release()
-        mediaPlayer = null
 
         val intent = Intent(this, MainActivity::class.java)
         song.currentMillis = player.millis
