@@ -11,7 +11,6 @@ import com.example.flo.data.Song
 class MediaPlayerService : Service() {
     private val mBinder = LocalBinder()
     var music = 0
-    var millis = 0
     var playTime = 0
     var mediaPlayer : MediaPlayer? = null
 
@@ -32,8 +31,10 @@ class MediaPlayerService : Service() {
     }
 
     override fun onDestroy() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        if(!mediaPlayer?.isPlaying!!){
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
         super.onDestroy()
     }
 
@@ -47,9 +48,11 @@ class MediaPlayerService : Service() {
     }
 
     fun initService(song : Song){
-        music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music)
-        mediaPlayer?.isLooping = false // 반복재생
+        if(mediaPlayer == null){
+            music = resources.getIdentifier(song.music, "raw", this.packageName)
+            mediaPlayer = MediaPlayer.create(this, music)
+            mediaPlayer?.isLooping = false // 반복재생
+        }
         playTime = mediaPlayer?.duration!!
     }
 }

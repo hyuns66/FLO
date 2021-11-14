@@ -50,14 +50,13 @@ class SongActivity : AppCompatActivity(){
         player = Player(song.playTime, song.currentMillis,  song.isPlaying)
         player.start()
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
-        Log.d("initialized", "1")
 
         // 뷰 초기화
         setIconStatus(song.isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
         setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
         setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
-        Log.d("initialized", "2")
+
         binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
         binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
 
@@ -256,14 +255,19 @@ class SongActivity : AppCompatActivity(){
     override fun onStart() {
         Log.d("state", "Song onStart()")
         super.onStart()
-        Log.d("initialized", "3")
     }
     override fun onPause() {
         Log.d("state", "Song onPause()")
         super.onPause()
     }
 
+    override fun onStop() {
+        Log.d("state", "Song onStop()")
+        super.onStop()
+    }
+
     override fun onDestroy() {
+        Log.d("state", "Song onDestroy()")
         player.interrupt()
         unbindService(connection)
         super.onDestroy()
@@ -273,7 +277,6 @@ class SongActivity : AppCompatActivity(){
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MediaPlayerService.LocalBinder
             mediaPlayerService = binder.getService()
-            Log.d("initialized", "mediaPlayer initialized!!!")
             mediaPlayerService.initService(song)
             binding.songPlayTimeTv.text = String.format("%02d:%02d", mediaPlayerService.playTime/1000/60, mediaPlayerService.playTime/1000%60)
             isServiceBound = true
@@ -281,7 +284,7 @@ class SongActivity : AppCompatActivity(){
 
         override fun onServiceDisconnected(name: ComponentName?) {
             isServiceBound = false
+            Log.d("service", "service disconnected")
         }
-
     }
 }
