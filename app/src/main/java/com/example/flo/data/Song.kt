@@ -12,7 +12,6 @@ import com.example.flo.R
 data class Song(
         var title : String = "",
         var artist : String = "",
-        var isPlaying : Boolean = false,
         @PrimaryKey val music : String = "",
         var playTime : Int = 0,
         var currentMillis : Int = 0,
@@ -26,7 +25,6 @@ data class Song(
     constructor(parcel : Parcel) : this (
             parcel.readString()!!,
             parcel.readString()!!,
-            parcel.readBoolean(),
             parcel.readString()!!,
             parcel.readInt(),
             parcel.readInt(),
@@ -42,7 +40,6 @@ data class Song(
     override fun writeToParcel(dest: Parcel?, flags: Int) {
         dest?.writeString(title)
         dest?.writeString(artist)
-        dest?.writeBoolean(isPlaying)
         dest?.writeString(music)
         dest?.writeInt(playTime)
         dest?.writeInt(currentMillis)

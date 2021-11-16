@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     var isLike = false
     var isUnlike = false
     var isMixed = false
+    var isPlaying = false
     var musicRepeatMode = 0
     var playList : ArrayList<Song> = arrayListOf<Song>()
     var playListPosition = 0
@@ -70,19 +71,19 @@ class MainActivity : AppCompatActivity() {
         binding.mainPauseBtn.visibility = View.GONE
 
         // 스레드 생성, 시작
-        player = Player(song.playTime, song.currentMillis, song.isPlaying)
+        player = Player(song.playTime, song.currentMillis, isPlaying)
         player.start()
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
             setPlayerStatus(song)
-            song.isPlaying = true
+            isPlaying = true
             player.isPlaying = true
             if(musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                 if (binding.mainPlayTimeBar.progress == 1000){
                     binding.mainPlayTimeBar.progress = 0
                     song.currentMillis = 0
-                    player = Player(song.playTime, song.currentMillis, song.isPlaying)
+                    player = Player(song.playTime, song.currentMillis, isPlaying)
                     player.start()
                 } else {
                     song.currentMillis = (binding.mainPlayTimeBar.progress)*(song.playTime)
@@ -93,7 +94,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.mainPauseBtn.setOnClickListener{
             setPlayerStatus(song)
-            song.isPlaying = false
+            isPlaying = false
             player.isPlaying = false
             song.currentMillis = player.millis
             mediaPlayerService.stopMusic()
@@ -129,6 +130,7 @@ class MainActivity : AppCompatActivity() {
 
             intent.putExtra("songJson", song)
             intent.putExtra("isLike", isLike)
+            intent.putExtra("isPlaying", isPlaying)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
             startActivity(intent)
@@ -182,7 +184,7 @@ class MainActivity : AppCompatActivity() {
     fun setPlayerStatus(song: Song) : Boolean{
         binding.mainPlayerArtistTv.text = song.artist
         binding.mainPlayerTitleTv.text = song.title
-        if(song.isPlaying){
+        if(isPlaying){
             binding.mainMiniplayerBtn.visibility = View.VISIBLE
             binding.mainPauseBtn.visibility = View.GONE
             return false
@@ -218,6 +220,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         Log.d("state", "Main onNewIntent()")
         if(intent != null){
+            isPlaying = intent.getBooleanExtra("isPlaying", isPlaying)
             song = intent.getParcelableExtra("songJson")!!
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
@@ -230,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         Log.d("state", "Main onResume()")
 
         // 플레이어 뷰 초기화
-        if(song.isPlaying){
+        if(isPlaying){
             binding.mainMiniplayerBtn.visibility = View.GONE
             binding.mainPauseBtn.visibility = View.VISIBLE
         } else {
@@ -238,7 +241,7 @@ class MainActivity : AppCompatActivity() {
             binding.mainPauseBtn.visibility = View.GONE
         }
         player.millis = song.currentMillis
-        player.isPlaying = song.isPlaying
+        player.isPlaying = isPlaying
 
         binding.mainPlayTimeBar.progress = song.currentMillis/song.playTime
         super.onResume()
@@ -261,7 +264,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         Log.d("state","Main onDestroy()")
         player.isPlaying = false
-        song.isPlaying = false
+        isPlaying = false
         song.currentMillis = player.millis
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
@@ -300,7 +303,6 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "LILAC",
                         "아이유(IU)",
-                        false,
                         "iu_lilac",
                         200,
                         0,
@@ -312,7 +314,6 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "strawberry moon",
                         "아이유(IU)",
-                        false,
                         "iu_strawberry_moon",
                         200,
                         0,
@@ -324,7 +325,6 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "savage",
                         "에스파(aespa)",
-                        false,
                         "aespa_savage",
                         200,
                         0,
@@ -336,7 +336,6 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "Weekend",
                         "태연(TAEYEON)",
-                        false,
                         "taeyeon_weekend",
                         200,
                         0,
@@ -373,7 +372,7 @@ class MainActivity : AppCompatActivity() {
             mediaPlayerService.initService(song)
         }
         song.playTime = mediaPlayerService.playTime/1000
-        player = Player(song.playTime, 0, song.isPlaying)
+        player = Player(song.playTime, 0, isPlaying)
         player.start()
     }
 
@@ -399,8 +398,8 @@ class MainActivity : AppCompatActivity() {
                         if(musicRepeatMode == 0){
                             runOnUiThread{
                                 setPlayerStatus(song)
-                                song.isPlaying = setPlayerStatus(song)
-                                player.isPlaying = song.isPlaying
+                                isPlaying = setPlayerStatus(song)
+                                player.isPlaying = isPlaying
                             }
                             break
                         } else {
