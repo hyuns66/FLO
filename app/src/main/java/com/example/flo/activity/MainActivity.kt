@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     var isMixed = false
     var musicRepeatMode = 0
     var playList : ArrayList<Song> = arrayListOf<Song>()
+    var playListPosition = 0
     private var song : Song = Song()
     private var gson : Gson = Gson()
     private var mediaPlayer : MediaPlayer? = null
@@ -55,12 +56,6 @@ class MainActivity : AppCompatActivity() {
 
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-//        val songJson = sharedPreferences.getString("song", null)
-//        song = if(songJson == null) {
-//            Song("LILAC", "아이유(IU)", false, "iu_lilac", 215, 0, false, R.drawable.img_album_exp2)
-//        } else {
-//            gson.fromJson(songJson, Song::class.java)
-//        }
         val playedMusic = sharedPreferences.getString("music", null)
         if(playedMusic == null){
             initMusic(getPlayListPosition("savage"))
@@ -75,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         binding.mainPauseBtn.visibility = View.GONE
 
         // 스레드 생성, 시작
-        player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
+        player = Player(song.playTime, song.currentMillis, song.isPlaying)
         player.start()
 
         // 플레이, 정지 버튼
@@ -87,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 if (binding.mainPlayTimeBar.progress == 1000){
                     binding.mainPlayTimeBar.progress = 0
                     song.currentMillis = 0
-                    player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
+                    player = Player(song.playTime, song.currentMillis, song.isPlaying)
                     player.start()
                 } else {
                     song.currentMillis = (binding.mainPlayTimeBar.progress)*(song.playTime)
@@ -102,6 +97,26 @@ class MainActivity : AppCompatActivity() {
             player.isPlaying = false
             song.currentMillis = player.millis
             mediaPlayerService.stopMusic()
+        }
+
+        // 이전 버튼
+        binding.mainPreviousBtn.setOnClickListener {
+            if(playListPosition > 0){
+                playListPosition--
+                setMusic(playListPosition)
+            } else {
+                Toast.makeText(this, "플레이 리스트의 맨 처음입니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 다음 버튼
+        binding.mainNextBtn.setOnClickListener {
+            if(playListPosition < playList.size - 1){
+                playListPosition++
+                setMusic(playListPosition)
+            } else {
+                Toast.makeText(this, "플레이 리스트의 맨 마지막입니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // SongActivity intent
@@ -333,7 +348,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initPlayList(list : List<Song>){
         playList.addAll(list)
-        Log.d("playList", playList.toString())
     }
 
     private fun initMusic(position : Int){
@@ -343,23 +357,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setMusic(position : Int){
+        player.interrupt()
         song = playList[position]
         binding.mainPlayerTitleTv.text = song.title
         binding.mainPlayerArtistTv.text = song.artist
-        mediaPlayerService.music = resources.getIdentifier(song.music, "raw", this.packageName)
-        player.millis = 0
+        if(mediaPlayerService.mediaPlayer?.isPlaying!!){
+            mediaPlayerService.stopMusic()
+            mediaPlayerService.mediaPlayer?.release()
+            mediaPlayerService.mediaPlayer = null
+            mediaPlayerService.initService(song)
+            mediaPlayerService.playMusic(0)
+        } else {
+            mediaPlayerService.mediaPlayer?.release()
+            mediaPlayerService.mediaPlayer = null
+            mediaPlayerService.initService(song)
+        }
+        song.playTime = mediaPlayerService.playTime/1000
+        player = Player(song.playTime, 0, song.isPlaying)
+        player.start()
     }
 
     private fun getPlayListPosition(music : String) : Int{
         for (i in 0 until playList.size){
             if (playList[i].music == music){
+                playListPosition = i
                 return i
             }
         }
+        playListPosition = 0
         return 0
     }
 
-    inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean , val intent: Intent) : Thread(){
+    inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean) : Thread(){
         var millis = currentMillis
 
         override fun run() {
