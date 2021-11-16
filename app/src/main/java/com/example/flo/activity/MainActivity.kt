@@ -18,6 +18,7 @@ import com.example.flo.fragment.LookFragment
 import com.example.flo.fragment.SearchFragment
 import com.example.flo.R
 import com.example.flo.data.Song
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.ActivityMainBinding
 import com.example.flo.service.MediaPlayerService
 import com.google.gson.Gson
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     var isLike = false
     var isUnlike = false
     var isMixed = false
+    var musicRepeatMode = 0
+    var playList : ArrayList<Song> = arrayListOf<Song>()
     private var song : Song = Song()
     private var gson : Gson = Gson()
     private var mediaPlayer : MediaPlayer? = null
@@ -44,32 +47,43 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
+        initDummySongs()
+        initPlayList(SongDB.getInstance(this)!!.SongDao().getSongs())
+
+        val serviceIntent = Intent(this,MediaPlayerService::class.java)
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val songJson = sharedPreferences.getString("song", null)
-        song = if(songJson == null) {
-            Song("LILAC", "아이유(IU)", false, "iu_lilac", 215, 0, 0, R.drawable.img_album_exp2)
+//        val songJson = sharedPreferences.getString("song", null)
+//        song = if(songJson == null) {
+//            Song("LILAC", "아이유(IU)", false, "iu_lilac", 215, 0, false, R.drawable.img_album_exp2)
+//        } else {
+//            gson.fromJson(songJson, Song::class.java)
+//        }
+        val playedMusic = sharedPreferences.getString("music", null)
+        if(playedMusic == null){
+            initMusic(getPlayListPosition("savage"))
         } else {
-            gson.fromJson(songJson, Song::class.java)
+            initMusic(getPlayListPosition(playedMusic))
         }
+        song.currentMillis = sharedPreferences.getInt("currentMillis", 1234)
 
         // 뷰 초기화
         binding.mainPlayTimeBar.isEnabled = false
         binding.mainMiniplayerBtn.visibility = View.VISIBLE
         binding.mainPauseBtn.visibility = View.GONE
+
         // 스레드 생성, 시작
-        val serviceIntent = Intent(this,MediaPlayerService::class.java)
         player = Player(song.playTime, song.currentMillis, song.isPlaying, serviceIntent)
         player.start()
-        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
         // 플레이, 정지 버튼
         binding.mainMiniplayerBtn.setOnClickListener{
             setPlayerStatus(song)
             song.isPlaying = true
             player.isPlaying = true
-            if(song.musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
+            if(musicRepeatMode == 0 && player.state == Thread.State.TERMINATED){
                 if (binding.mainPlayTimeBar.progress == 1000){
                     binding.mainPlayTimeBar.progress = 0
                     song.currentMillis = 0
@@ -79,13 +93,14 @@ class MainActivity : AppCompatActivity() {
                     song.currentMillis = (binding.mainPlayTimeBar.progress)*(song.playTime)
                 }
             }
-            mediaPlayerService.playMusic(song)
+            mediaPlayerService.playMusic(song.currentMillis)
         }
 
         binding.mainPauseBtn.setOnClickListener{
             setPlayerStatus(song)
             song.isPlaying = false
             player.isPlaying = false
+            song.currentMillis = player.millis
             mediaPlayerService.stopMusic()
         }
 
@@ -93,6 +108,8 @@ class MainActivity : AppCompatActivity() {
         binding.mainPlayerLayout.setOnClickListener{
 
             val intent = Intent(this, SongActivity::class.java)
+            song.playTime = mediaPlayerService.playTime/1000
+            Log.d("playtime", song.playTime.toString())
             song.currentMillis = player.millis
 
             intent.putExtra("songJson", song)
@@ -234,8 +251,11 @@ class MainActivity : AppCompatActivity() {
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        val songJson = gson.toJson(song)
-        editor.putString("song", songJson)
+//        val songJson = gson.toJson(song)
+//        editor.putString("song", songJson)
+        editor.putInt("currentMillis", song.currentMillis)
+        Log.d("millis", song.currentMillis.toString())
+        editor.putString("music", song.music)
         editor.apply()
         player.interrupt()
         unbindService(connection)
@@ -256,6 +276,89 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun initDummySongs(){
+        val songDB = SongDB.getInstance(this)!!
+        val songs = songDB.SongDao().getSongs()
+
+        if (songs.isNotEmpty()) return
+        songDB.SongDao().insert(
+                Song(
+                        "LILAC",
+                        "아이유(IU)",
+                        false,
+                        "iu_lilac",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "strawberry moon",
+                        "아이유(IU)",
+                        false,
+                        "iu_strawberry_moon",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp3
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "savage",
+                        "에스파(aespa)",
+                        false,
+                        "aespa_savage",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp4
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "Weekend",
+                        "태연(TAEYEON)",
+                        false,
+                        "taeyeon_weekend",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp5
+                )
+        )
+    }
+
+    private fun initPlayList(list : List<Song>){
+        playList.addAll(list)
+        Log.d("playList", playList.toString())
+    }
+
+    private fun initMusic(position : Int){
+        song = playList[position]
+        binding.mainPlayerTitleTv.text = song.title
+        binding.mainPlayerArtistTv.text = song.artist
+    }
+
+    private fun setMusic(position : Int){
+        song = playList[position]
+        binding.mainPlayerTitleTv.text = song.title
+        binding.mainPlayerArtistTv.text = song.artist
+        mediaPlayerService.music = resources.getIdentifier(song.music, "raw", this.packageName)
+        player.millis = 0
+    }
+
+    private fun getPlayListPosition(music : String) : Int{
+        for (i in 0 until playList.size){
+            if (playList[i].music == music){
+                return i
+            }
+        }
+        return 0
+    }
+
     inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean , val intent: Intent) : Thread(){
         var millis = currentMillis
 
@@ -264,7 +367,7 @@ class MainActivity : AppCompatActivity() {
                 while (true){
                     if (millis/1000 >= playTime){
                         mediaPlayerService.stopMusic()
-                        if(song.musicRepeatMode == 0){
+                        if(musicRepeatMode == 0){
                             runOnUiThread{
                                 setPlayerStatus(song)
                                 song.isPlaying = setPlayerStatus(song)
@@ -274,7 +377,7 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             millis = 0
                             song.currentMillis = 0
-                            mediaPlayerService.playMusic(song)
+                            mediaPlayerService.playMusic(song.currentMillis)
                         }
                         continue
                     } else {

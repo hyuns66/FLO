@@ -1,22 +1,26 @@
 package com.example.flo.data
 
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.flo.R
 
+@Entity(tableName = "SongTable")
 data class Song(
         var title : String = "",
         var artist : String = "",
         var isPlaying : Boolean = false,
-        var music : String = "",
+        @PrimaryKey val music : String = "",
         var playTime : Int = 0,
         var currentMillis : Int = 0,
-        var musicRepeatMode : Int = 0,
-        val mainImgURL : Int = R.drawable.img_album_exp2
+        var isLike : Boolean = false,
+        val coverImg : Int = R.drawable.img_album_exp2
 ) : Parcelable {
+//
+//    @PrimaryKey(autoGenerate = true) var id : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel : Parcel) : this (
@@ -26,7 +30,7 @@ data class Song(
             parcel.readString()!!,
             parcel.readInt(),
             parcel.readInt(),
-            parcel.readInt(),
+            parcel.readBoolean(),
             parcel.readInt()
             )
 
@@ -42,8 +46,8 @@ data class Song(
         dest?.writeString(music)
         dest?.writeInt(playTime)
         dest?.writeInt(currentMillis)
-        dest?.writeInt(musicRepeatMode)
-        dest?.writeInt(mainImgURL)
+        dest?.writeBoolean(isLike)
+        dest?.writeInt(coverImg)
     }
 
     companion object CREATOR : Parcelable.Creator<Song>{

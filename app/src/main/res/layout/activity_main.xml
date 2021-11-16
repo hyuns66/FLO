@@ -36,15 +36,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/main_player_layout"/>
 
-<!--    <TextView-->
-<!--        android:id="@+id/main_play_time_tv"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="4dp"-->
-<!--        app:layout_constraintStart_toStartOf="@id/main_play_time_bar"-->
-<!--        app:layout_constraintEnd_toEndOf="@id/main_play_time_bar"-->
-<!--        app:layout_constraintTop_toTopOf="@id/main_play_time_bar"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/main_play_time_bar"/>-->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_player_layout"
         android:layout_width="match_parent"

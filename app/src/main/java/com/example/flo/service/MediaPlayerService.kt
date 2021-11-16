@@ -31,15 +31,16 @@ class MediaPlayerService : Service() {
     }
 
     override fun onDestroy() {
-        if(!mediaPlayer?.isPlaying!!){
+        if(mediaPlayer?.isPlaying!!){
+            mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = null
         }
         super.onDestroy()
     }
 
-    fun playMusic(song : Song){
-        mediaPlayer?.seekTo(song.currentMillis)
+    fun playMusic(currentMillis : Int){
+        mediaPlayer?.seekTo(currentMillis)
         mediaPlayer?.start()
     }
 
