@@ -22,6 +22,8 @@ class SongActivity : AppCompatActivity(){
     var isLike = false
     var isUnlike = false
     var isPlaying = false
+    var playListPosition = 0
+    var playList = arrayListOf<Song>()
     var musicRepeatMode = 0
     private var song : Song = Song()
     private lateinit var mediaPlayerService : MediaPlayerService
@@ -41,6 +43,9 @@ class SongActivity : AppCompatActivity(){
 
             binding.songTitleTv.text = song.title
             binding.songArtistTv.text = song.artist
+            binding.songMainAlbumIv.setImageResource(song.coverImg)
+            playListPosition = intent.getIntExtra("playListPosition", 0)
+            playList = intent.getParcelableArrayListExtra<Song>("playList")!!
             isPlaying = intent.getBooleanExtra("isPlaying", false)
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
@@ -86,6 +91,7 @@ class SongActivity : AppCompatActivity(){
 
             val intent = Intent(this, MainActivity::class.java)
             song.currentMillis = player.millis
+            intent.putExtra("playListPosition", playListPosition)
             intent.putExtra("isPlaying", isPlaying)
             intent.putExtra("songJson", song)
             intent.putExtra("isLike", isLike)
@@ -119,6 +125,26 @@ class SongActivity : AppCompatActivity(){
             setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             isPlaying = setIconStatus(isPlaying, binding.songPlayerPlayBtnIv, binding.songPlayerPauseBtnIv)
             player.isPlaying = isPlaying
+        }
+
+        // 이전 버튼
+        binding.songPlayerPreviousBtnIv.setOnClickListener {
+            if(playListPosition > 0){
+                playListPosition--
+                setMusic(playListPosition)
+            } else {
+                Toast.makeText(this, "플레이 리스트의 맨 처음입니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 다음 버튼
+        binding.songPlayerNextBtnIv.setOnClickListener {
+            if(playListPosition < playList.size - 1){
+                playListPosition++
+                setMusic(playListPosition)
+            } else {
+                Toast.makeText(this, "플레이 리스트의 맨 마지막입니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // 플레이타임 조절 리스너
@@ -190,6 +216,7 @@ class SongActivity : AppCompatActivity(){
 
         val intent = Intent(this, MainActivity::class.java)
         song.currentMillis = player.millis
+        intent.putExtra("playListPosition", playListPosition)
         intent.putExtra("isPlaying", isPlaying)
         intent.putExtra("songJson", song)
         intent.putExtra("isLike", isLike)
@@ -293,4 +320,29 @@ class SongActivity : AppCompatActivity(){
             Log.d("service", "service disconnected")
         }
     }
+
+    private fun setMusic(position : Int){
+        player.interrupt()
+        song = playList[position]
+        binding.songTitleTv.text = song.title
+        binding.songArtistTv.text = song.artist
+        if(isPlaying){
+            mediaPlayerService.stopMusic()
+            mediaPlayerService.mediaPlayer?.release()
+            mediaPlayerService.mediaPlayer = null
+            mediaPlayerService.initService(song)
+            mediaPlayerService.playMusic(0)
+        } else {
+            mediaPlayerService.mediaPlayer?.release()
+            mediaPlayerService.mediaPlayer = null
+            mediaPlayerService.initService(song)
+            binding.songPlayTimeTv.text = String.format("00:00")
+            binding.songPlayTimeBar.progress = 0
+        }
+        song.playTime = mediaPlayerService.playTime/1000
+        player = Player(song.playTime, 0, isPlaying)
+        player.start()
+        binding.songMainAlbumIv.setImageResource(song.coverImg)
+    }
+
 }

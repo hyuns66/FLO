@@ -128,6 +128,8 @@ class MainActivity : AppCompatActivity() {
             Log.d("playtime", song.playTime.toString())
             song.currentMillis = player.millis
 
+            intent.putExtra("playListPosition", playListPosition)
+            intent.putExtra("playList", playList)
             intent.putExtra("songJson", song)
             intent.putExtra("isLike", isLike)
             intent.putExtra("isPlaying", isPlaying)
@@ -220,7 +222,8 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         Log.d("state", "Main onNewIntent()")
         if(intent != null){
-            isPlaying = intent.getBooleanExtra("isPlaying", isPlaying)
+            playListPosition = intent.getIntExtra("playListPosition", 0)
+            isPlaying = intent.getBooleanExtra("isPlaying", false)
             song = intent.getParcelableExtra("songJson")!!
             isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
@@ -360,7 +363,7 @@ class MainActivity : AppCompatActivity() {
         song = playList[position]
         binding.mainPlayerTitleTv.text = song.title
         binding.mainPlayerArtistTv.text = song.artist
-        if(mediaPlayerService.mediaPlayer?.isPlaying!!){
+        if(isPlaying){
             mediaPlayerService.stopMusic()
             mediaPlayerService.mediaPlayer?.release()
             mediaPlayerService.mediaPlayer = null
@@ -370,6 +373,7 @@ class MainActivity : AppCompatActivity() {
             mediaPlayerService.mediaPlayer?.release()
             mediaPlayerService.mediaPlayer = null
             mediaPlayerService.initService(song)
+            binding.mainPlayTimeBar.progress = 0
         }
         song.playTime = mediaPlayerService.playTime/1000
         player = Player(song.playTime, 0, isPlaying)
