@@ -1,18 +1,21 @@
 package com.example.flo.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.R
 import com.example.flo.data.HomeAlbum
+import com.example.flo.data.Song
 import com.example.flo.databinding.ItemHomeTodayPublishedAlbumRvBinding
 import com.example.flo.databinding.ItemLockerSavedMusicRvBinding
 
-class LockerSavedMusicRvAdapter(private val albumList : ArrayList<HomeAlbum>) : RecyclerView.Adapter<LockerSavedMusicRvAdapter.ViewHolder>(){
+class LockerSavedMusicRvAdapter() : RecyclerView.Adapter<LockerSavedMusicRvAdapter.ViewHolder>(){
 
+    private val savedSongs = arrayListOf<Song>()
     interface ItemClickListener{
-
+        fun removeSong(music : String)
     }
 
     private lateinit var mItemClickListener : ItemClickListener
@@ -27,27 +30,40 @@ class LockerSavedMusicRvAdapter(private val albumList : ArrayList<HomeAlbum>) : 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(albumList[position])
+        holder.bind(savedSongs[position])
         holder.itemView.setOnClickListener {
             Log.e("position", position.toString())
         }
         holder.binding.lockerSavedMusicBtnMoreIv.setOnClickListener{
-            notifyItemMoved(position, position+1)
-            notifyItemChanged(position)
-            notifyItemChanged(position+1)
+            mItemClickListener.removeSong(savedSongs[position].music)
+            removeSong(position)
         }
     }
 
     override fun getItemCount(): Int {
-        return albumList.size
+        return savedSongs.size
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun addSongs(savedSongs : ArrayList<Song>){
+        this.savedSongs.clear()
+        this.savedSongs.addAll(savedSongs)
+
+        notifyDataSetChanged()
+    }
+
+    private fun removeSong(position: Int){
+        savedSongs.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, itemCount)
     }
 
     inner class ViewHolder(val binding:ItemLockerSavedMusicRvBinding) : RecyclerView.ViewHolder(binding.root){
 
-        fun bind(album : HomeAlbum){
-            binding.lockerSavedMusicTitleTv.text = album.title
-            binding.lockerSavedMusicArtistTv.text = album.artist
-            binding.lockerSavedMusicIv.setImageResource(album.coverImg!!)
+        fun bind(song : Song){
+            binding.lockerSavedMusicTitleTv.text = song.title
+            binding.lockerSavedMusicArtistTv.text = song.artist
+            binding.lockerSavedMusicIv.setImageResource(song.coverImg)
         }
     }
 }

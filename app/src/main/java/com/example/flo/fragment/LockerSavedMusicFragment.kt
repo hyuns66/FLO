@@ -1,6 +1,7 @@
 package com.example.flo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,31 +11,47 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.R
 import com.example.flo.adapter.LockerSavedMusicRvAdapter
 import com.example.flo.data.HomeAlbum
+import com.example.flo.data.Song
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentLockerSavedMusicBinding
 
 class LockerSavedMusicFragment : Fragment() {
-    private var savedAlbumList = arrayListOf<HomeAlbum>()
+
+    var savedSongs = arrayListOf<Song>()
     lateinit var binding : FragmentLockerSavedMusicBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binding = FragmentLockerSavedMusicBinding.inflate(inflater, container, false)
 
-        savedAlbumList.clear()
-        savedAlbumList.apply {
-            add(HomeAlbum("LILAC", "아이유(IU)", R.drawable.img_album_exp2))
-            add(HomeAlbum("strawberry moon", "아이유(IU)", R.drawable.img_album_exp3))
-            add(HomeAlbum("Savage", "에스파(asepa)", R.drawable.img_album_exp4))
-            add(HomeAlbum("Weekend", "태연(TAEYEON)", R.drawable.img_album_exp5))
-        }
+        return binding.root
+    }
 
-        val savedMusicAdapter = LockerSavedMusicRvAdapter(savedAlbumList)
+    override fun onStart() {
+        Log.d("state", "LockerSavedMusic onStart()")
+
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Log.d("state", "LockerSavedMusic onResume()")
+
+        val songDB = SongDB.getInstance(requireContext())!!
+        savedSongs = songDB.SongDao().getIsLikedSongs(true) as ArrayList<Song>
+
+        val savedMusicAdapter = LockerSavedMusicRvAdapter()
         binding.lockerSavedMusicRv.apply {
+            savedMusicAdapter.addSongs(savedSongs)
             adapter = savedMusicAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
+        savedMusicAdapter.setItemClickListener(object : LockerSavedMusicRvAdapter.ItemClickListener{
+            override fun removeSong(music : String) {
+                songDB.SongDao().updateIsLikeByMusic(false, music)
+            }
+        })
 
-        return binding.root
+        super.onResume()
     }
 }

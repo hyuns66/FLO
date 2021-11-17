@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
             initMusic(getPlayListPosition(playedMusic))
         }
         song.currentMillis = sharedPreferences.getInt("currentMillis", 1234)
+        song.playTime = sharedPreferences.getInt("playTime", 200)
 
         // 뷰 초기화
         binding.mainPlayTimeBar.isEnabled = false
@@ -220,6 +221,7 @@ class MainActivity : AppCompatActivity() {
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
             playList = intent.getParcelableArrayListExtra<Song>("playList")!!
+            player.mPlayTime = song.playTime
         }
         super.onNewIntent(intent)
     }
@@ -262,12 +264,14 @@ class MainActivity : AppCompatActivity() {
         Log.d("state","Main onDestroy()")
         player.isPlaying = false
         isPlaying = false
+        song.playTime = mediaPlayerService.playTime/1000
         song.currentMillis = player.millis
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putInt("currentMillis", song.currentMillis)
         editor.putString("music", song.music)
+        editor.putInt("playTime", song.playTime)
         editor.apply()
         player.interrupt()
         unbindService(connection)
@@ -497,11 +501,12 @@ class MainActivity : AppCompatActivity() {
 
     inner class Player(private val playTime : Int, private val currentMillis : Int, var isPlaying : Boolean) : Thread(){
         var millis = currentMillis
+        var mPlayTime = playTime
 
         override fun run() {
             try {
                 while (true){
-                    if (millis/1000 >= playTime){
+                    if (millis/1000 >= mPlayTime){
                         mediaPlayerService.stopMusic()
                         if(musicRepeatMode == 0){
                             runOnUiThread{
@@ -522,7 +527,7 @@ class MainActivity : AppCompatActivity() {
                             millis++
 
                             runOnUiThread{
-                                binding.mainPlayTimeBar.progress = millis/playTime
+                                binding.mainPlayTimeBar.progress = millis/mPlayTime
                             }
                         }
                     }

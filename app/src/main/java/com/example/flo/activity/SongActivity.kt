@@ -37,51 +37,6 @@ class SongActivity : AppCompatActivity(){
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 데이터 렌더링
-        if(intent != null){
-            song = intent.getParcelableExtra<Song>("songJson")!!
-
-            playListPosition = intent.getIntExtra("playListPosition", 0)
-            playList = intent.getParcelableArrayListExtra<Song>("playList")!!
-            song = playList[playListPosition]
-            isPlaying = intent.getBooleanExtra("isPlaying", false)
-            isUnlike = intent.getBooleanExtra("isUnlike", false)
-            isMixed = intent.getBooleanExtra("isMixed", false)
-        }
-
-        Log.d("playtime", song.playTime.toString())
-        // Player() 스레드 생성
-        val serviceIntent = Intent(this,MediaPlayerService::class.java)
-        player = Player(song.playTime, song.currentMillis,  isPlaying)
-        player.start()
-        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
-
-        // 뷰 초기화
-        setIconStatus(isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
-        setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
-        initView()
-
-        binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
-        binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
-
-        when(musicRepeatMode){
-            0 -> {
-                binding.songPlayerRepeatBtn0Iv.visibility = View.VISIBLE
-                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
-                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
-            }
-            1 -> {
-                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
-                binding.songPlayerRepeatBtn1Iv.visibility = View.VISIBLE
-                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
-            }
-            2 -> {
-                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
-                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
-                binding.songPlayerRepeatBtn2Iv.visibility = View.VISIBLE
-            }
-        }
-
         // 닫기 버튼
         binding.songCloseBtnIv.setOnClickListener{
 
@@ -284,6 +239,52 @@ class SongActivity : AppCompatActivity(){
 
     override fun onStart() {
         Log.d("state", "Song onStart()")
+
+        // 데이터 렌더링
+        if(intent != null){
+            song = intent.getParcelableExtra<Song>("songJson")!!
+
+            playListPosition = intent.getIntExtra("playListPosition", 0)
+            playList = intent.getParcelableArrayListExtra<Song>("playList")!!
+            song = intent.getParcelableExtra<Song>("songJson")!!
+            isPlaying = intent.getBooleanExtra("isPlaying", false)
+            isUnlike = intent.getBooleanExtra("isUnlike", false)
+            isMixed = intent.getBooleanExtra("isMixed", false)
+        }
+
+        Log.d("playtime", song.playTime.toString())
+        // Player() 스레드 생성
+        val serviceIntent = Intent(this,MediaPlayerService::class.java)
+        player = Player(song.playTime, song.currentMillis,  isPlaying)
+        player.start()
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
+
+        // 뷰 초기화
+        setIconStatus(isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
+        setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
+        initView()
+
+        binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
+        binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
+
+        when(musicRepeatMode){
+            0 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.VISIBLE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
+            }
+            1 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.VISIBLE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.GONE
+            }
+            2 -> {
+                binding.songPlayerRepeatBtn0Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn1Iv.visibility = View.GONE
+                binding.songPlayerRepeatBtn2Iv.visibility = View.VISIBLE
+            }
+        }
+
         super.onStart()
     }
     override fun onPause() {
@@ -319,7 +320,7 @@ class SongActivity : AppCompatActivity(){
 
     private fun setMusic(position : Int){
         player.interrupt()
-        song = playList[position]
+        song = songDB.SongDao().getSong(playList[position].music)
         Log.d("isLike", song.toString())
         binding.songTitleTv.text = song.title
         binding.songArtistTv.text = song.artist
