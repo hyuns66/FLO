@@ -26,7 +26,6 @@ import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
-    var isLike = false
     var isUnlike = false
     var isMixed = false
     var isPlaying = false
@@ -34,8 +33,6 @@ class MainActivity : AppCompatActivity() {
     var playList : ArrayList<Song> = arrayListOf<Song>()
     var playListPosition = 0
     private var song : Song = Song()
-    private var gson : Gson = Gson()
-    private var mediaPlayer : MediaPlayer? = null
     private lateinit var mediaPlayerService : MediaPlayerService
     private var isServiceBound = false
     lateinit var player : Player
@@ -131,7 +128,6 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("playListPosition", playListPosition)
             intent.putExtra("playList", playList)
             intent.putExtra("songJson", song)
-            intent.putExtra("isLike", isLike)
             intent.putExtra("isPlaying", isPlaying)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
@@ -204,10 +200,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "'뒤로' 버튼을 한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show()
                 return
             } else {
-                mediaPlayer?.pause()
-                mediaPlayer?.release()
-                mediaPlayer = null
-
                 finish()
             }
         }
@@ -225,9 +217,9 @@ class MainActivity : AppCompatActivity() {
             playListPosition = intent.getIntExtra("playListPosition", 0)
             isPlaying = intent.getBooleanExtra("isPlaying", false)
             song = intent.getParcelableExtra("songJson")!!
-            isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
+            playList = intent.getParcelableArrayListExtra<Song>("playList")!!
         }
         super.onNewIntent(intent)
     }
@@ -246,6 +238,8 @@ class MainActivity : AppCompatActivity() {
         player.millis = song.currentMillis
         player.isPlaying = isPlaying
 
+        binding.mainPlayerTitleTv.text = song.title
+        binding.mainPlayerArtistTv.text = song.artist
         binding.mainPlayTimeBar.progress = song.currentMillis/song.playTime
         super.onResume()
     }
@@ -272,10 +266,7 @@ class MainActivity : AppCompatActivity() {
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-//        val songJson = gson.toJson(song)
-//        editor.putString("song", songJson)
         editor.putInt("currentMillis", song.currentMillis)
-        Log.d("millis", song.currentMillis.toString())
         editor.putString("music", song.music)
         editor.apply()
         player.interrupt()
@@ -306,6 +297,7 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "LILAC",
                         "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
                         "iu_lilac",
                         200,
                         0,
@@ -315,8 +307,118 @@ class MainActivity : AppCompatActivity() {
         )
         songDB.SongDao().insert(
                 Song(
+                        "Flu",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_flu",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "Coin",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_coin",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "봄 안녕 봄",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_spring_hello_spring",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "Celebrity",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_celebrity",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "돌림노래 (Feat.DEAN)",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_spinning_song",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "빈 컵 (Empty Cup)",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_empty_cup",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "아이와 나의 바다",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_sea_of_child_and_me",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "어푸 (Ah Phu)",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_ah_phu",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+        songDB.SongDao().insert(
+                Song(
+                        "에필로그",
+                        "아이유(IU)",
+                        "IU 5th Album 'LILAC'",
+                        "iu_epilogue",
+                        200,
+                        0,
+                        false,
+                        R.drawable.img_album_exp2
+                )
+        )
+
+        songDB.SongDao().insert(
+                Song(
                         "strawberry moon",
                         "아이유(IU)",
+                        "strawberry moon",
                         "iu_strawberry_moon",
                         200,
                         0,
@@ -328,6 +430,7 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "savage",
                         "에스파(aespa)",
+                        "Savage - The 1st Mini Album",
                         "aespa_savage",
                         200,
                         0,
@@ -339,6 +442,7 @@ class MainActivity : AppCompatActivity() {
                 Song(
                         "Weekend",
                         "태연(TAEYEON)",
+                        "Weekend",
                         "taeyeon_weekend",
                         200,
                         0,

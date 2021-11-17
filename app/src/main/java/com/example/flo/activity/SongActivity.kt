@@ -12,6 +12,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.data.Song
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.ActivitySongBinding
 import com.example.flo.service.MediaPlayerService
 import com.google.gson.Gson
@@ -19,12 +20,12 @@ import com.google.gson.Gson
 class SongActivity : AppCompatActivity(){
 
     var isMixed = false
-    var isLike = false
     var isUnlike = false
     var isPlaying = false
     var playListPosition = 0
     var playList = arrayListOf<Song>()
     var musicRepeatMode = 0
+    val songDB = SongDB.getInstance(this)!!
     private var song : Song = Song()
     private lateinit var mediaPlayerService : MediaPlayerService
     private var isServiceBound = false
@@ -37,17 +38,13 @@ class SongActivity : AppCompatActivity(){
         setContentView(binding.root)
 
         // 데이터 렌더링
-        if(intent.hasExtra("songJson") && intent.hasExtra("isLike")
-                && intent.hasExtra("isMixed") && intent.hasExtra("isUnlike")){
+        if(intent != null){
             song = intent.getParcelableExtra<Song>("songJson")!!
 
-            binding.songTitleTv.text = song.title
-            binding.songArtistTv.text = song.artist
-            binding.songMainAlbumIv.setImageResource(song.coverImg)
             playListPosition = intent.getIntExtra("playListPosition", 0)
             playList = intent.getParcelableArrayListExtra<Song>("playList")!!
+            song = playList[playListPosition]
             isPlaying = intent.getBooleanExtra("isPlaying", false)
-            isLike = intent.getBooleanExtra("isLike", false)
             isUnlike = intent.getBooleanExtra("isUnlike", false)
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
@@ -62,8 +59,7 @@ class SongActivity : AppCompatActivity(){
         // 뷰 초기화
         setIconStatus(isPlaying, binding.songPlayerPauseBtnIv, binding.songPlayerPlayBtnIv)
         setIconStatus(isMixed, binding.songPlayerRandomBtnOnIv, binding.songPlayerRandomBtnOffIv)
-        setIconStatus(isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
-        setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
+        initView()
 
         binding.songPlayTimeBar.progress = song.currentMillis/song.playTime
         binding.songPlayTimeCurrentTv.text = String.format("%02d:%02d", song.currentMillis/1000/60, song.currentMillis/1000%60)
@@ -94,7 +90,6 @@ class SongActivity : AppCompatActivity(){
             intent.putExtra("playListPosition", playListPosition)
             intent.putExtra("isPlaying", isPlaying)
             intent.putExtra("songJson", song)
-            intent.putExtra("isLike", isLike)
             intent.putExtra("isUnlike", isUnlike)
             intent.putExtra("isMixed", isMixed)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -158,11 +153,12 @@ class SongActivity : AppCompatActivity(){
 
         // 좋아요 버튼
         binding.songLikeBtn.setOnClickListener{
-            Log.d("isLike", isLike.toString())
-            setIconStatus(isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
-            isLike = setIconStatus(isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
-            if(isLike == true){
-                Toast.makeText(this, "좋아요 표시한 플레이 리스트에 담았습니다.", Toast.LENGTH_SHORT).show()
+            setIconStatus(song.isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
+            song.isLike = setIconStatus(song.isLike, binding.songLikeBtnOffIv, binding.songLikeBtnOnIv)
+            if(song.isLike){
+                songDB.SongDao().updateIsLikeByMusic(true, song.music)
+            } else {
+                songDB.SongDao().updateIsLikeByMusic(false, song.music)
             }
         }
 
@@ -216,10 +212,10 @@ class SongActivity : AppCompatActivity(){
 
         val intent = Intent(this, MainActivity::class.java)
         song.currentMillis = player.millis
+        intent.putExtra("playList", playList)
         intent.putExtra("playListPosition", playListPosition)
         intent.putExtra("isPlaying", isPlaying)
         intent.putExtra("songJson", song)
-        intent.putExtra("isLike", isLike)
         intent.putExtra("isUnlike", isUnlike)
         intent.putExtra("isMixed", isMixed)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -253,6 +249,7 @@ class SongActivity : AppCompatActivity(){
             try {
                 while (true){
                     if (millis/1000 >= playTime){
+                        Log.d("playtime", playTime.toString())
                         mediaPlayerService.stopMusic()
                         if(musicRepeatMode == 0){
                             runOnUiThread{
@@ -311,7 +308,6 @@ class SongActivity : AppCompatActivity(){
             val binder = service as MediaPlayerService.LocalBinder
             mediaPlayerService = binder.getService()
             mediaPlayerService.initService(song)
-            binding.songPlayTimeTv.text = String.format("%02d:%02d", mediaPlayerService.playTime/1000/60, mediaPlayerService.playTime/1000%60)
             isServiceBound = true
         }
 
@@ -324,6 +320,7 @@ class SongActivity : AppCompatActivity(){
     private fun setMusic(position : Int){
         player.interrupt()
         song = playList[position]
+        Log.d("isLike", song.toString())
         binding.songTitleTv.text = song.title
         binding.songArtistTv.text = song.artist
         if(isPlaying){
@@ -342,7 +339,16 @@ class SongActivity : AppCompatActivity(){
         song.playTime = mediaPlayerService.playTime/1000
         player = Player(song.playTime, 0, isPlaying)
         player.start()
+        initView()
+    }
+
+    private fun initView(){
+        binding.songTitleTv.text = song.title
+        binding.songArtistTv.text = song.artist
         binding.songMainAlbumIv.setImageResource(song.coverImg)
+        setIconStatus(song.isLike, binding.songLikeBtnOnIv, binding.songLikeBtnOffIv)
+        setIconStatus(isUnlike, binding.songUnlikeBtnOnIv, binding.songUnlikeBtnOffIv)
+        binding.songPlayTimeTv.text = String.format("%02d:%02d", song.playTime/60, song.playTime%60)
     }
 
 }

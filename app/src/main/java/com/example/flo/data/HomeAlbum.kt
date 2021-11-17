@@ -1,8 +1,11 @@
 package com.example.flo.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class HomeAlbum(
-        var title : String? = "",
-        var artist : String? = "",
-        var coverImg : Int? = null,
-        var songs : ArrayList<Song>? = null
+        @PrimaryKey val title : String = "",
+        val artist : String = "",
+        val coverImg : Int? = null,
+        val songs : ArrayList<Song>? = null
 )
