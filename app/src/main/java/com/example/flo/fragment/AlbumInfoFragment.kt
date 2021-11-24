@@ -1,15 +1,18 @@
 package com.example.flo.fragment
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.activity.MainActivity
 import com.example.flo.activity.SongActivity
 import com.example.flo.adapter.AlbumInfoVpAdapter
 import com.example.flo.data.Album
+import com.example.flo.data.SavedAlbum
 import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentAlbumInfoBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -31,11 +34,7 @@ class AlbumInfoFragment : Fragment() {
         val albumInfo = arguments?.getParcelable<Album>("albumInfo")
 
         // 뷰 초기화
-        binding.albumInfoMainTitleTv.text = albumInfo?.title
-        binding.albumInfoMainArtistTv.text = albumInfo?.artist
-        binding.albumInfoMainAlbumIv.setImageResource(albumInfo?.coverImg!!)
-
-        binding.albumInfoMainTitleTv.isSelected = true
+        initView(albumInfo!!)
 
         //터치 이벤트를 위해 레이아웃 최상단에 위치시키는 작업
         binding.albumInfoIcBackIv.bringToFront()
@@ -49,7 +48,8 @@ class AlbumInfoFragment : Fragment() {
 
         //하트버튼
         binding.albumInfoIcFavorite.setOnClickListener{
-            setFavoriteBtn(albumInfo.isLike, albumInfo.title, songDB)
+            val jwt = getJwt()
+            setFavoriteBtn(isLike(albumInfo.title), jwt, albumInfo.title, songDB)
         }
 
         val pagerAdapter = AlbumInfoVpAdapter(this, albumInfo.title)
@@ -66,18 +66,55 @@ class AlbumInfoFragment : Fragment() {
         return binding.root
     }
 
-    private fun setFavoriteBtn(isLike : Boolean, title : String, songDB: SongDB) {
+    private fun initView(albumInfo : Album){
+        binding.albumInfoMainTitleTv.text = albumInfo.title
+        binding.albumInfoMainArtistTv.text = albumInfo.artist
+        binding.albumInfoMainAlbumIv.setImageResource(albumInfo.coverImg!!)
+        binding.albumInfoMainTitleTv.isSelected = true
+        if(isLike(albumInfo.title)){
+            binding.albumInfoIcFavoriteOnIv.visibility = View.VISIBLE
+            binding.albumInfoIcFavoriteOffIv.visibility = View.GONE
+        } else {
+            binding.albumInfoIcFavoriteOnIv.visibility = View.GONE
+            binding.albumInfoIcFavoriteOffIv.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setFavoriteBtn(isLike : Boolean, userId : Int, title : String, songDB: SongDB) : Boolean{
         if (isLike) {
             binding.albumInfoIcFavoriteOffIv.visibility = View.VISIBLE
             binding.albumInfoIcFavoriteOnIv.visibility = View.GONE
-
-            songDB.AlbumDao().setIsLike(false, title)
+            disLikeAlbum(songDB, userId, title)
+            return false
         } else {
             binding.albumInfoIcFavoriteOffIv.visibility = View.GONE
             binding.albumInfoIcFavoriteOnIv.visibility = View.VISIBLE
-
-            songDB.AlbumDao().setIsLike(true, title)
+            likeAlbum(songDB, userId, title)
+            return true
         }
+    }
+
+    private fun isLike(album : String) : Boolean{
+        val songDB = SongDB.getInstance(requireContext())!!
+        val userId = getJwt()
+
+        val likeAlbum = songDB.AlbumDao().getIsLikedAlbum(userId, album)
+        return likeAlbum != null
+    }
+
+    private fun likeAlbum(songDB: SongDB, userId : Int, title : String){
+        val album = SavedAlbum(userId, title)
+
+        songDB.AlbumDao().likeAlbum(album)
+    }
+
+    private fun getJwt() : Int{
+        val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
+        return spf!!.getInt("jwt", 0)
+    }
+
+    private fun disLikeAlbum(songDB: SongDB, userId: Int, title: String){
+        songDB.AlbumDao().disLikeAlbum(userId, title)
     }
 
     fun setImageView(imgRes : Int) {
