@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flo.R
 import com.example.flo.adapter.LockerSavedMusicRvAdapter
-import com.example.flo.data.HomeAlbum
 import com.example.flo.data.Song
 import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentLockerSavedMusicBinding

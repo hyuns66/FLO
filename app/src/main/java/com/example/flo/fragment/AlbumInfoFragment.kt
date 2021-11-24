@@ -1,26 +1,22 @@
 package com.example.flo.fragment
 
-import android.content.res.Resources
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.viewpager2.widget.ViewPager2
-import com.example.flo.R
+import com.example.flo.activity.MainActivity
+import com.example.flo.activity.SongActivity
 import com.example.flo.adapter.AlbumInfoVpAdapter
-import com.example.flo.data.HomeAlbum
-import com.example.flo.data.Song
+import com.example.flo.data.Album
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentAlbumInfoBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 
 class AlbumInfoFragment : Fragment() {
 
-    val gson : Gson = Gson()
     val tabItems : ArrayList<String> = arrayListOf("수록곡", "상세정보", "영상")
     lateinit var binding : FragmentAlbumInfoBinding
 
@@ -28,17 +24,16 @@ class AlbumInfoFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        var isfavorite : Boolean = false
         binding = FragmentAlbumInfoBinding.inflate(inflater, container, false)
+        val songDB = SongDB.getInstance(context as MainActivity)!!
 
         //데이터 렌더링
-        val albumData = arguments?.getString("albumData")
-        val homeAlbum = gson.fromJson(albumData, HomeAlbum::class.java)
+        val albumInfo = arguments?.getParcelable<Album>("albumInfo")
 
         // 뷰 초기화
-        binding.albumInfoMainTitleTv.text = homeAlbum?.title
-        binding.albumInfoMainArtistTv.text = homeAlbum?.artist
-        binding.albumInfoMainAlbumIv.setImageResource(homeAlbum?.coverImg!!)
+        binding.albumInfoMainTitleTv.text = albumInfo?.title
+        binding.albumInfoMainArtistTv.text = albumInfo?.artist
+        binding.albumInfoMainAlbumIv.setImageResource(albumInfo?.coverImg!!)
 
         binding.albumInfoMainTitleTv.isSelected = true
 
@@ -54,11 +49,10 @@ class AlbumInfoFragment : Fragment() {
 
         //하트버튼
         binding.albumInfoIcFavorite.setOnClickListener{
-            setFavoriteBtn(isfavorite)
-            isfavorite = setFavoriteBtn(isfavorite)
+            setFavoriteBtn(albumInfo.isLike, albumInfo.title, songDB)
         }
 
-        val pagerAdapter = AlbumInfoVpAdapter(this)
+        val pagerAdapter = AlbumInfoVpAdapter(this, albumInfo.title)
 
         binding.albumInfoTabVp.apply {
             adapter = pagerAdapter
@@ -72,15 +66,17 @@ class AlbumInfoFragment : Fragment() {
         return binding.root
     }
 
-    fun setFavoriteBtn(isfavorite : Boolean) : Boolean {
-        if (isfavorite == true) {
+    private fun setFavoriteBtn(isLike : Boolean, title : String, songDB: SongDB) {
+        if (isLike) {
             binding.albumInfoIcFavoriteOffIv.visibility = View.VISIBLE
             binding.albumInfoIcFavoriteOnIv.visibility = View.GONE
-            return false
+
+            songDB.AlbumDao().setIsLike(false, title)
         } else {
             binding.albumInfoIcFavoriteOffIv.visibility = View.GONE
             binding.albumInfoIcFavoriteOnIv.visibility = View.VISIBLE
-            return true
+
+            songDB.AlbumDao().setIsLike(true, title)
         }
     }
 

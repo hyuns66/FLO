@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flo.R
-import com.example.flo.data.HomeAlbum
 import com.example.flo.data.Song
-import com.example.flo.databinding.ItemHomeTodayPublishedAlbumRvBinding
 import com.example.flo.databinding.ItemLockerSavedMusicRvBinding
 
 class LockerSavedMusicRvAdapter() : RecyclerView.Adapter<LockerSavedMusicRvAdapter.ViewHolder>(){

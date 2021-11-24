@@ -17,6 +17,7 @@ import com.example.flo.fragment.LockerFragment
 import com.example.flo.fragment.LookFragment
 import com.example.flo.fragment.SearchFragment
 import com.example.flo.R
+import com.example.flo.data.Album
 import com.example.flo.data.Song
 import com.example.flo.data.SongDB
 import com.example.flo.databinding.ActivityMainBinding
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     var isMixed = false
     var isPlaying = false
     var musicRepeatMode = 0
-    var playList : ArrayList<Song> = arrayListOf<Song>()
+    var playList : ArrayList<Song> = arrayListOf()
     var playListPosition = 0
     private var song : Song = Song()
     private lateinit var mediaPlayerService : MediaPlayerService
@@ -45,12 +46,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val songDB = SongDB.getInstance(this)!!
         initNavigation()
-        initDummySongs()
-        initPlayList(SongDB.getInstance(this)!!.SongDao().getSongs())
+        initDummySongs(songDB)
+        initDummyAlbums(songDB)
+        initPlayList(songDB.SongDao().getSongs())
 
         val serviceIntent = Intent(this,MediaPlayerService::class.java)
-        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
+        bindService(serviceIntent, connection, BIND_AUTO_CREATE)
 
         // sharedPreferences
         val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
@@ -292,8 +295,41 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun initDummySongs(){
-        val songDB = SongDB.getInstance(this)!!
+    private fun initDummyAlbums(songDB: SongDB){
+        val albums = songDB.AlbumDao().getAlbums()
+
+        if (albums.isNotEmpty()) return
+
+        songDB.AlbumDao().insert(
+                Album("IU 5th Album 'LILAC'",
+                    "아이유(IU)",
+                        R.drawable.img_album_exp2,
+                    false)
+        )
+
+        songDB.AlbumDao().insert(
+                Album("strawberry moon",
+                        "아이유(IU)",
+                        R.drawable.img_album_exp3,
+                        false)
+        )
+
+        songDB.AlbumDao().insert(
+                Album("Savage - The 1st Mini Album",
+                        "에스파(aespa)",
+                        R.drawable.img_album_exp4,
+                        false)
+        )
+
+        songDB.AlbumDao().insert(
+                Album("Weekend",
+                        "태연(TAEYEON)",
+                        R.drawable.img_album_exp5,
+                        false)
+        )
+    }
+
+    private fun initDummySongs(songDB : SongDB){
         val songs = songDB.SongDao().getSongs()
 
         if (songs.isNotEmpty()) return

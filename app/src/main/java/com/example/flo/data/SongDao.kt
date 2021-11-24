@@ -4,7 +4,7 @@ import androidx.room.*
 
 @Dao
 interface SongDao {
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     fun insert(song:Song)
 
     @Update
@@ -24,4 +24,7 @@ interface SongDao {
 
     @Query("SELECT * FROM SongTable WHERE isLike = :isLike")
     fun getIsLikedSongs(isLike : Boolean) : List<Song>
+
+    @Query("SELECT * FROM SongTable WHERE albumTitle = :albumTitle")
+    fun getAlbumSongs(albumTitle : String) : List<Song>
 }

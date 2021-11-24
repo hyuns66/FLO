@@ -1,6 +1,5 @@
 package com.example.flo.fragment
 
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,9 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -19,8 +16,8 @@ import com.example.flo.R
 import com.example.flo.adapter.HomeAdBannerAdapter
 import com.example.flo.adapter.HomeAlbumRvAdapter
 import com.example.flo.adapter.HomeMainPannelAdapter
-import com.example.flo.data.HomeAlbum
-import com.example.flo.data.Song
+import com.example.flo.data.Album
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
@@ -28,9 +25,8 @@ import com.google.gson.Gson
 
 class HomeFragment : Fragment() {
     lateinit var binding: FragmentHomeBinding
-    private var gson : Gson = Gson()
     private var pagerHandler = Handler(Looper.getMainLooper())
-    private var albumDatas = arrayListOf<HomeAlbum>()
+    private var albumDatas = arrayListOf<Album>()
     private val tabItems : ArrayList<String> = arrayListOf("","","","","")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -43,13 +39,8 @@ class HomeFragment : Fragment() {
         swiper.start()
 
         // 데이터리스트 더미데이터 생성
-        albumDatas.clear()
-        albumDatas.apply {
-            add(HomeAlbum("LILAC", "아이유(IU)", R.drawable.img_album_exp2))
-            add(HomeAlbum("strawberry moon", "아이유(IU)", R.drawable.img_album_exp3))
-            add(HomeAlbum("Savage", "에스파(asepa)", R.drawable.img_album_exp4))
-            add(HomeAlbum("Weekend", "태연(TAEYEON)", R.drawable.img_album_exp5))
-        }
+        val albumDB = SongDB.getInstance(context as MainActivity)!!
+        albumDatas = albumDB.AlbumDao().getAlbums() as ArrayList<Album>
 
         // 오늘 발매음악 리사이클러뷰 어댑터 연결
         val todayPublishedAdapter = HomeAlbumRvAdapter(albumDatas)
@@ -59,8 +50,8 @@ class HomeFragment : Fragment() {
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
         todayPublishedAdapter.setItemClickListener(object : HomeAlbumRvAdapter.ItemClickListener{
-            override fun onItemClick(homeAlbum: HomeAlbum) {
-                changeAlbumFragment(homeAlbum)
+            override fun onItemClick(album: Album) {
+                changeAlbumFragment(album)
             }
         })
 
@@ -96,12 +87,11 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    private fun changeAlbumFragment(homeAlbum: HomeAlbum) {
+    private fun changeAlbumFragment(album: Album) {
         (context as MainActivity).supportFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, AlbumInfoFragment().apply {
                     arguments = Bundle().apply {
-                        val albumJson = gson.toJson(homeAlbum)
-                        putString("albumData", albumJson)
+                        putParcelable("albumInfo", album)
                     }
                 })
                 .addToBackStack(null)

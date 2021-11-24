@@ -25,7 +25,7 @@ class SongActivity : AppCompatActivity(){
     var playListPosition = 0
     var playList = arrayListOf<Song>()
     var musicRepeatMode = 0
-    val songDB = SongDB.getInstance(this)!!
+    private val songDB = SongDB.getInstance(this)!!
     private var song : Song = Song()
     private lateinit var mediaPlayerService : MediaPlayerService
     private var isServiceBound = false
@@ -252,7 +252,6 @@ class SongActivity : AppCompatActivity(){
             isMixed = intent.getBooleanExtra("isMixed", false)
         }
 
-        Log.d("playtime", song.playTime.toString())
         // Player() 스레드 생성
         val serviceIntent = Intent(this,MediaPlayerService::class.java)
         player = Player(song.playTime, song.currentMillis,  isPlaying)

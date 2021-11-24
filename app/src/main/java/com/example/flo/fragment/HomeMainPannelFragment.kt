@@ -16,12 +16,12 @@ class HomeMainPannelFragment(val imgRes : Int, val title : String) : Fragment() 
 
         binding = FragmentHomeMainPannelBinding.inflate(inflater, container, false)
 
-        binding.homeBackgroundIv.setOnClickListener{
-            (context as MainActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, AlbumInfoFragment())
-                .addToBackStack(null)
-                .commitAllowingStateLoss()
-        }
+//        binding.homeBackgroundIv.setOnClickListener{
+//            (context as MainActivity).supportFragmentManager.beginTransaction()
+//                .replace(R.id.main_frm, AlbumInfoFragment())
+//                .addToBackStack(null)
+//                .commitAllowingStateLoss()
+//        }
 
         binding.homeBackgroundIv.setImageResource(imgRes)
         binding.homeBackgroundTitleTv.text = title

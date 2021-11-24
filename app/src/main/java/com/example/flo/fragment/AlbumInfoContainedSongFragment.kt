@@ -1,19 +1,30 @@
 package com.example.flo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.R
+import com.example.flo.activity.MainActivity
+import com.example.flo.adapter.AlbumInfoContainedSongRvAdapter
+import com.example.flo.data.Album
+import com.example.flo.data.Song
+import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentAlbumInfoContainedSongBinding
 
-class AlbumInfoContainedSongFragment : Fragment() {
+class AlbumInfoContainedSongFragment(title : String) : Fragment() {
 
     lateinit var binding : FragmentAlbumInfoContainedSongBinding
+    private val albumTitle = title
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentAlbumInfoContainedSongBinding.inflate(inflater, container, false)
+        val songDB = SongDB.getInstance(context as MainActivity)!!
+        val albumInfo = arguments?.getParcelable<Album>("albumInfo")
 
           val fragment = parentFragment as AlbumInfoFragment
 
@@ -32,6 +43,13 @@ class AlbumInfoContainedSongFragment : Fragment() {
                 fragment.setTextView("artist", "아이유(IU)")
                 fragment.setImageView(R.drawable.img_album_exp2)
             }
+        }
+
+        val containedSongRvAdapter = AlbumInfoContainedSongRvAdapter(songDB.SongDao().getAlbumSongs(albumTitle) as ArrayList<Song>)
+        binding.albumInfoContainedMusicRv.apply {
+            adapter = containedSongRvAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
 
         return binding.root
