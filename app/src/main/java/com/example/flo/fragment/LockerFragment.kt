@@ -1,5 +1,6 @@
 package com.example.flo.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flo.activity.LogInActivity
+import com.example.flo.activity.MainActivity
 import com.example.flo.adapter.LockerVpAdapter
 import com.example.flo.databinding.FragmentLockerBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -32,6 +35,12 @@ class LockerFragment : Fragment() {
         TabLayoutMediator(binding.lockerTabLayout, binding.lockerVp){
             tab, position -> tab.text = tabItems[position]
         }.attach()
+
+        // 로그인 버튼
+        binding.lockerLoginTv.setOnClickListener{
+            val intent = Intent(context as MainActivity ,LogInActivity::class.java)
+            startActivity(intent)
+        }
 
         return binding.root
     }
