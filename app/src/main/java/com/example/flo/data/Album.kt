@@ -12,11 +12,13 @@ import androidx.room.PrimaryKey
 data class Album(
         @PrimaryKey val title : String = "",
         val artist : String = "",
+        val albumInfo : String = "",
         val coverImg : Int? = null,
         val isLike : Boolean = false
 ) : Parcelable {
     @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel : Parcel) : this (
+            parcel.readString()!!,
             parcel.readString()!!,
             parcel.readString()!!,
             parcel.readInt(),
@@ -27,6 +29,7 @@ data class Album(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(artist)
+        parcel.writeString(albumInfo)
         parcel.writeValue(coverImg)
         parcel.writeBoolean(isLike)
     }

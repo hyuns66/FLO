@@ -19,7 +19,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 class LockerFragment : Fragment() {
 
     lateinit var binding: FragmentLockerBinding
-    private val tabItems = arrayListOf("저장한 곡", "음악파일")
+    private val tabItems = arrayListOf("저장한 곡", "음악파일", "저장한 앨범")
 
 
     override fun onCreateView(

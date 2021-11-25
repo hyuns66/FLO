@@ -303,6 +303,7 @@ class MainActivity : AppCompatActivity() {
         songDB.AlbumDao().insert(
                 Album("IU 5th Album 'LILAC'",
                     "아이유(IU)",
+                    "2021.03.25 | 정규 | 국내 댄스/일렉",
                         R.drawable.img_album_exp2,
                     false)
         )
@@ -310,6 +311,7 @@ class MainActivity : AppCompatActivity() {
         songDB.AlbumDao().insert(
                 Album("strawberry moon",
                         "아이유(IU)",
+                    "2021.10.19 | 싱글 | 국내 락/메탈",
                         R.drawable.img_album_exp3,
                         false)
         )
@@ -317,6 +319,7 @@ class MainActivity : AppCompatActivity() {
         songDB.AlbumDao().insert(
                 Album("Savage - The 1st Mini Album",
                         "에스파(aespa)",
+                    "2021.10.05 | 미니 | 댄스",
                         R.drawable.img_album_exp4,
                         false)
         )
@@ -324,6 +327,7 @@ class MainActivity : AppCompatActivity() {
         songDB.AlbumDao().insert(
                 Album("Weekend",
                         "태연(TAEYEON)",
+                    "2021.07.06 | 싱글 | 댄스 팝",
                         R.drawable.img_album_exp5,
                         false)
         )

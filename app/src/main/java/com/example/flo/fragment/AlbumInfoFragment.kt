@@ -69,6 +69,7 @@ class AlbumInfoFragment : Fragment() {
     private fun initView(albumInfo : Album){
         binding.albumInfoMainTitleTv.text = albumInfo.title
         binding.albumInfoMainArtistTv.text = albumInfo.artist
+        binding.albumInfoPublishInfoTv.text = albumInfo.albumInfo
         binding.albumInfoMainAlbumIv.setImageResource(albumInfo.coverImg!!)
         binding.albumInfoMainTitleTv.isSelected = true
         if(isLike(albumInfo.title)){
