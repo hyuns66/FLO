@@ -43,26 +43,6 @@ class SignUpActivity : AppCompatActivity(), SignUpView {
         return User(email, password, name)
     }
 
-//    private fun signUp(userDB : SongDB){
-//        if(binding.logInIdEt.text.isEmpty() || binding.logInEmailEt.text.isEmpty()){
-//            Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//        if(binding.logInPasswordEt.text.isEmpty() || binding.logInPasswordEt.text.toString() != binding.logInPasswordCheckEt.text.toString()){
-//            Toast.makeText(this, "비밀번호 입력란을 확인해주세요", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        if(userDB.UserDao().getUser(getUser().email) != null){
-//            Toast.makeText(this, "이미 존재하는 계정입니다.", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        userDB.UserDao().insert(getUser())
-//
-//        Log.d("가입완료!", userDB.UserDao().getUsers().toString())
-//    }
-
     private fun signUp(){
         if(binding.signUpIdEt.text.isEmpty() || binding.signUpEmailEt.text.isEmpty()){
             binding.signUpWarningEmailOverlappedTv.visibility = View.GONE

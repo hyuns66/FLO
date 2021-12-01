@@ -6,6 +6,16 @@
     android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ProgressBar
+        android:id="@+id/log_in_pb"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <ImageView
         android:id="@+id/log_in_close_btn"
         android:layout_width="30dp"
@@ -68,6 +78,16 @@
         app:layout_constraintTop_toTopOf="@id/log_in_email_et"
         app:layout_constraintEnd_toEndOf="@id/log_in_email_et"
         app:layout_constraintBottom_toBottomOf="@id/log_in_email_et"/>
+
+    <TextView
+        android:id="@+id/log_in_error_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="이메일을 확인해주세요"
+        android:visibility="gone"
+        android:textColor="#FF0000"
+        app:layout_constraintTop_toBottomOf="@id/log_in_email_et"
+        app:layout_constraintStart_toStartOf="@id/log_in_id_et"/>
 
     <EditText
         android:id="@+id/log_in_password_et"

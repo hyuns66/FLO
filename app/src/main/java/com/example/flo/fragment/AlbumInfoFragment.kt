@@ -15,6 +15,7 @@ import com.example.flo.data.Album
 import com.example.flo.data.SavedAlbum
 import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentAlbumInfoBinding
+import com.example.flo.getUserIdx
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 
@@ -48,8 +49,8 @@ class AlbumInfoFragment : Fragment() {
 
         //하트버튼
         binding.albumInfoIcFavorite.setOnClickListener{
-            val jwt = getJwt()
-            setFavoriteBtn(isLike(albumInfo.title), jwt, albumInfo.title, songDB)
+            val userIdx = getUserIdx(requireContext())
+            setFavoriteBtn(isLike(albumInfo.title), userIdx, albumInfo.title, songDB)
         }
 
         val pagerAdapter = AlbumInfoVpAdapter(this, albumInfo.title)
@@ -97,7 +98,7 @@ class AlbumInfoFragment : Fragment() {
 
     private fun isLike(album : String) : Boolean{
         val songDB = SongDB.getInstance(requireContext())!!
-        val userId = getJwt()
+        val userId = getUserIdx(requireContext())
 
         val likeAlbum = songDB.AlbumDao().getIsLikedAlbum(userId, album)
         return likeAlbum != null
@@ -107,11 +108,6 @@ class AlbumInfoFragment : Fragment() {
         val album = SavedAlbum(userId, title)
 
         songDB.AlbumDao().likeAlbum(album)
-    }
-
-    private fun getJwt() : Int{
-        val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
-        return spf!!.getInt("jwt", 0)
     }
 
     private fun disLikeAlbum(songDB: SongDB, userId: Int, title: String){

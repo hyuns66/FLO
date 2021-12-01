@@ -13,6 +13,7 @@ import com.example.flo.activity.LogInActivity
 import com.example.flo.activity.MainActivity
 import com.example.flo.adapter.LockerVpAdapter
 import com.example.flo.databinding.FragmentLockerBinding
+import com.example.flo.getUserIdx
 import com.google.android.material.tabs.TabLayoutMediator
 
 
@@ -47,10 +48,11 @@ class LockerFragment : Fragment() {
     }
 
     private fun initView(){
-        val jwt = getJwt()
+        val userIdx = getUserIdx(requireContext())
 
-        if(jwt == 0){
+        if(userIdx == 0){
             binding.lockerLoginTv.text = "로그인"
+            binding.lockerNameTv.visibility = View.GONE
 
             binding.lockerLoginTv.setOnClickListener {
                 val intent = Intent(activity, LogInActivity::class.java)
@@ -58,18 +60,14 @@ class LockerFragment : Fragment() {
             }
         } else {
             binding.lockerLoginTv.text = "로그아웃"
+            binding.lockerNameTv.visibility = View.VISIBLE
 
             binding.lockerLoginTv.setOnClickListener {
                 binding.lockerLoginTv.text = "로그인"
+                binding.lockerNameTv.visibility = View.GONE
                 logOut()
             }
         }
-    }
-
-    private fun getJwt():Int {
-        val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
-
-        return spf?.getInt("jwt", 0)!!
     }
 
     private fun logOut() {

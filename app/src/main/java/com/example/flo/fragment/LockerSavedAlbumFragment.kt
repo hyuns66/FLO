@@ -12,6 +12,7 @@ import com.example.flo.adapter.LockerSavedAlbumRvAdapter
 import com.example.flo.data.Album
 import com.example.flo.data.SongDB
 import com.example.flo.databinding.FragmentLockerSavedAlbumBinding
+import com.example.flo.getUserIdx
 
 class LockerSavedAlbumFragment : Fragment() {
 
@@ -29,9 +30,9 @@ class LockerSavedAlbumFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val jwt = getJwt()
+        val userIdx = getUserIdx(requireContext())
         val songDB = SongDB.getInstance(requireContext())!!
-        val albumData = songDB.AlbumDao().getLikedAlbums(jwt) as ArrayList<Album>
+        val albumData = songDB.AlbumDao().getLikedAlbums(userIdx) as ArrayList<Album>
         val mAdapter = LockerSavedAlbumRvAdapter(albumData)
 
         binding.lockerSavedAlbumRv.apply{
@@ -39,11 +40,5 @@ class LockerSavedAlbumFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
-    }
-
-    private fun getJwt():Int {
-        val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
-
-        return spf?.getInt("jwt", 0)!!
     }
 }
